@@ -9,6 +9,7 @@ import {
   getFirestore,
   doc,
   updateDoc,
+  getDoc,
 } from "firebase/firestore";
 
 /* ================= FIREBASE ================= */
@@ -37,30 +38,63 @@ function ConfirmOrderContent() {
 
   useEffect(() => {
     const confirmOrder = async () => {
-      try {
-        const orderId = searchParams.get("id");
+  try {
+    const orderId = searchParams.get("id");
 
-        if (!orderId) {
-          setMessage("لم يتم العثور على رقم الطلب");
-          setLoading(false);
-          return;
-        }
+    if (!orderId) {
+      setMessage("لم يتم العثور على رقم الطلب");
+      setLoading(false);
+      return;
+    }
 
-        const orderRef = doc(db, "orders", orderId);
+    const orderRef = doc(db, "orders", orderId);
 
-        await updateDoc(orderRef, {
-          status: "confirmed",
-          expiresAt: null,
-        });
+    /* get order first */
+    const orderSnap = await getDoc(orderRef);
 
-        setMessage("تم تأكيد الاوردر بنجاح ✅");
-      } catch (error) {
-        console.log(error);
-        setMessage("حدث خطأ أثناء تأكيد الاوردر");
-      } finally {
-        setLoading(false);
-      }
-    };
+    if (!orderSnap.exists()) {
+      setMessage("هذا الطلب غير موجود");
+      setLoading(false);
+      return;
+    }
+
+    const orderData = orderSnap.data();
+
+    /* already confirmed */
+    if (orderData.status === "confirmed") {
+      setMessage("تم تأكيد الاوردر بالفعل ✅");
+      setLoading(false);
+      return;
+    }
+
+    /* cancelled */
+    if (orderData.status === "cancelled") {
+      setMessage(
+        "تم الغاء هذا الطلب بنجاح يرجي اعادة الطلب ثم تاكيده في اسرع وقت ❌"
+      );
+      setLoading(false);
+      return;
+    }
+
+    /* confirm only if pending */
+    if (orderData.status === "pending") {
+      await updateDoc(orderRef, {
+        status: "confirmed",
+        expiresAt: null,
+      });
+
+      setMessage("تم تأكيد الاوردر بنجاح ✅");
+    } else {
+      setMessage("لا يمكن تأكيد هذا الطلب");
+    }
+
+  } catch (error) {
+    console.log(error);
+    setMessage("حدث خطأ أثناء تأكيد الاوردر");
+  } finally {
+    setLoading(false);
+  }
+};
 
     confirmOrder();
   }, [searchParams]);
