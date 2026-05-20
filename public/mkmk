@@ -1,0 +1,12 @@
+useEffect(() => {
+    const alreadyReloaded = sessionStorage.getItem("page_reloaded");
+
+    if (!alreadyReloaded) {
+      sessionStorage.setItem("page_reloaded", "true");
+      window.location.reload();
+    }
+
+    return () => {
+      sessionStorage.removeItem("page_reloaded");
+    };
+  }, []);
