@@ -41,3 +41,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+
+strik-store-firebase-adminsdk-fbsvc-586d2882db.json
