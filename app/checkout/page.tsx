@@ -334,10 +334,10 @@ export default function CheckoutPage() {
       const orderId = orderRef.id;
 
       const confirmLink =
-  `http://strike-eg.netlify.app/confirm-order?id=${orderId}`;
+  `https://strike-store-eg-ss55.vercel.app/confirm-order?id=${orderId}`;
 
 const cancelLink =
-  `http://strike.netlify.app/cancel-order?id=${orderId}`;
+  `https://strike-store-eg-ss55.vercel.app/cancel-order?id=${orderId}`;
 
 
       const itemsSummary = itemsWithOptions
