@@ -391,7 +391,7 @@ cancel_link: cancelLink
   {
     customer_name: formData.fullName,
 
-    customer_email: 'mohanad45450@gmail.com',
+    customer_email: formData.email,
 
     customer_phone: formData.phone,
 
