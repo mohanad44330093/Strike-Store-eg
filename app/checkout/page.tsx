@@ -14,6 +14,7 @@ import {
 import emailjs from "@emailjs/browser";
 
 import "./page.css";
+import { label } from "framer-motion/client";
 
 /* ================= FIREBASE CONFIG ================= */
 
@@ -78,6 +79,20 @@ const SIZES = [
     height: "45CM - 60CM",
     width: "30CM - 40CM",
   },
+  {
+    value: "XL",
+    label: "XL",
+    weight: "85 - 100",
+    height: "45cm - 60cm",
+    width: "30cm - 40cm",
+  },
+  {
+    value: "xXL",
+    label: "xXL",
+    weight: "100 - 115",
+    height: "45cm - 60cm",
+    width: "30cm - 40cm",
+  }
 ];
 
 /* ================= TRANSLATIONS ================= */
