@@ -913,7 +913,7 @@ header {
 
 .market_products {
   flex: 1;
-  overflow-y: auto;
+  overflow-y: scroll;
   padding: 16px;
   display: flex;
   flex-direction: column;
@@ -1004,6 +1004,8 @@ header {
   flex-direction: column;
   gap: 14px;
   flex-shrink: 0;
+  position: fixed;
+  bottom: 0;
 }
 
 .total_price {
