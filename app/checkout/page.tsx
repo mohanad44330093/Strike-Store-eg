@@ -498,13 +498,6 @@ cancel_link: cancelLink
         )}
 
         <header className="checkout_header">
-          <button 
-  className="back_btn" 
-  onClick={() => router.back()}
-  style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
->
-  ←
-</button>
           <h1>{t.pageTitle}</h1>
         </header>
 
