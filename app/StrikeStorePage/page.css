@@ -919,7 +919,7 @@ header {
   flex-direction: column;
   gap: 14px;
   -webkit-overflow-scrolling: touch;
-  height: 80%;
+  height: 60%;
 }
 
 .market_products::-webkit-scrollbar { width: 4px; }
