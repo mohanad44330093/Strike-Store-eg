@@ -18,3 +18,7 @@ export default function RootLayout({
     </html>
   );
 }
+
+// ============================================== |
+// =======This code was written by Mohannad Ahmed |
+// ============================================== |

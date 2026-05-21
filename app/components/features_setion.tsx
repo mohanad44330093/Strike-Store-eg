@@ -94,3 +94,7 @@ function FeatureSection() {
 }
 
 export default FeatureSection;
+
+// ============================================== |
+// =======This code was written by Mohannad Ahmed |
+// ============================================== |

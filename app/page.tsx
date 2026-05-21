@@ -120,3 +120,7 @@ export default function Home() {
     </div>
   );
 }
+
+// ============================================== |
+// =======This code was written by Mohannad Ahmed |
+// ============================================== |

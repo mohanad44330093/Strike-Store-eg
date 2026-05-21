@@ -113,3 +113,7 @@ function HeroSection() {
 }
 
 export default HeroSection;
+
+// ============================================== |
+// =======This code was written by Mohannad Ahmed |
+// ============================================== |

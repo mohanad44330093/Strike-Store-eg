@@ -1,5 +1,3 @@
-// StrikeStoreHeader.jsx - Updated Version (accepts searchSlot prop)
-
 "use client";
 
 import { useState, useRef, useEffect, ReactNode } from "react";
@@ -7,13 +5,13 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 
-const sourceimage = './images/StrikeWhiteLogo.png';
+const sourceimage = "./images/StrikeWhiteLogo.png";
 
 interface HeaderProps {
-  onOpenSearch?: () => void;    // kept for backward compat, no longer used for modal
+  onOpenSearch?: () => void;
   onOpenSettings?: () => void;
   isArabic?: boolean;
-  searchSlot?: ReactNode;       // NEW: renders SearchBarWithSuggestions inline
+  searchSlot?: ReactNode;
 }
 
 export default function StrikeStoreHeader({
@@ -23,17 +21,28 @@ export default function StrikeStoreHeader({
   searchSlot,
 }: HeaderProps) {
   const router = useRouter();
+
   const [menuOpen, setMenuOpen] = useState(false);
   const [cartCount, setCartCount] = useState(0);
+
   const cartIconRef = useRef<HTMLDivElement>(null);
 
-  /* ---- Update Cart Count ---- */
+  /* =========================================================
+     UPDATE CART COUNT
+  ========================================================= */
+
   const updateCartCount = () => {
     const savedCart = localStorage.getItem("strike_cart");
+
     if (savedCart) {
       try {
         const cart = JSON.parse(savedCart);
-        const total = cart.reduce((sum: number, item: any) => sum + item.quantity, 0);
+
+        const total = cart.reduce(
+          (sum: number, item: any) => sum + item.quantity,
+          0
+        );
+
         setCartCount(total);
       } catch {
         setCartCount(0);
@@ -45,211 +54,224 @@ export default function StrikeStoreHeader({
 
   useEffect(() => {
     updateCartCount();
+
     window.addEventListener("cartUpdated", updateCartCount);
-    return () => window.removeEventListener("cartUpdated", updateCartCount);
+
+    return () => {
+      window.removeEventListener("cartUpdated", updateCartCount);
+    };
   }, []);
 
-  /* ---- Toggle Menu ---- */
-  const toggleMenu = () => setMenuOpen(!menuOpen);
+  /* =========================================================
+     MENU
+  ========================================================= */
 
-  /* ---- Smooth Scroll to Section ---- */
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen);
+  };
+
   const handleMenuLink = (sectionId: string) => {
     setMenuOpen(false);
+
     setTimeout(() => {
       const el = document.getElementById(sectionId);
-      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+
+      if (el) {
+        el.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
     }, 150);
+  };
+
+  /* =========================================================
+     OPEN CART
+  ========================================================= */
+
+  const openCart = () => {
+    const cartSidebar = document.querySelector(
+      ".market_list"
+    ) as HTMLElement;
+
+    if (cartSidebar) {
+      cartSidebar.classList.add("open");
+      cartSidebar.style.right = "0";
+    }
   };
 
   return (
     <>
-      <header className={isArabic ? "rtl" : "ltr"}>
-        {/* LEFT: Hamburger + Logo */}
-        <div className="Logo_box">
-          <div
-            className={`List_box ${menuOpen ? "active" : ""}`}
-            onClick={toggleMenu}
-          >
-            <div className="top_line"></div>
-            <div className="middle_line"></div>
-            <div className="end_line"></div>
-          </div>
+      {/* =========================================================
+          HEADER
+      ========================================================= */}
 
-          <div className="Logo" onClick={() => router.push("/StrikeStorePage")}>
-            <h2 className="logo" style={{ cursor: "pointer", margin: 0 }}>
+      <header className={`strike_header ${isArabic ? "rtl" : "ltr"}`}>
+        {/* ================= TOP ================= */}
+
+        <div className="header_top">
+          {/* LEFT */}
+          <div className="header_left">
+            {/* MENU BUTTON */}
+            <div
+              className={`List_box ${menuOpen ? "active" : ""}`}
+              onClick={toggleMenu}
+            >
+              <div className="top_line"></div>
+              <div className="middle_line"></div>
+              <div className="end_line"></div>
+            </div>
+
+            {/* LOGO */}
+            <div
+              className="Logo"
+              onClick={() => router.push("/StrikeStorePage")}
+            >
               <Image
                 className="Strike_Logo_For_Header"
                 src={sourceimage}
                 alt="Strike Logo"
-                width={205}
-                height={105}
+                width={220}
+                height={100}
+                priority
               />
-            </h2>
+            </div>
+          </div>
+
+          {/* RIGHT */}
+          <div className="header_right">
+            <div className="market_cart">
+              {/* CART */}
+              <div
+                ref={cartIconRef}
+                className="cart_btn"
+                onClick={openCart}
+              >
+                <span className="material-symbols-outlined">
+                  shopping_cart
+                </span>
+
+                {cartCount > 0 && (
+                  <div className="counter">{cartCount}</div>
+                )}
+              </div>
+
+              {/* SETTINGS */}
+              <button
+                className="settings_btn"
+                onClick={onOpenSettings}
+                title={isArabic ? "الإعدادات" : "Settings"}
+              >
+                <span className="material-symbols-outlined">
+                  settings
+                </span>
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* CENTER: Smart Search (passed as slot from parent) */}
-        {searchSlot ? (
-          searchSlot
-        ) : (
-          /* Fallback: old plain search box if no slot passed */
-          <div className="Search_box">
-            <input
-              type="text"
-              placeholder={isArabic ? "ابحث عن منتج..." : "Search products..."}
-              readOnly
-              onClick={onOpenSearch}
-            />
-            <span
-              className="material-symbols-outlined"
-              onClick={onOpenSearch}
-              style={{ cursor: "pointer" }}
-            >
-              search
-            </span>
-          </div>
-        )}
+        {/* ================= SEARCH ================= */}
 
-        {/* RIGHT: Cart + Settings */}
-        <div className="market_cart">
-          <div
-            ref={cartIconRef}
-            style={{ position: "relative", cursor: "pointer" }}
-            onClick={() => {
-              const cartSidebar = document.querySelector(".market_list") as HTMLElement;
-              if (cartSidebar) cartSidebar.style.right = "0";
-            }}
-          >
-            <span className="material-symbols-outlined icon-2">shopping_cart</span>
-            {cartCount > 0 && <div className="counter">{cartCount}</div>}
-          </div>
+        <div className="header_search">
+          {searchSlot ? (
+            searchSlot
+          ) : (
+            <div className="Search_box">
+              <span
+                className="material-symbols-outlined search_icon"
+                onClick={onOpenSearch}
+              >
+                search
+              </span>
 
-          <button
-            style={{
-              background: "transparent",
-              border: "none",
-              color: "#fff",
-              cursor: "pointer",
-              padding: "10px",
-              borderRadius: "50%",
-              transition: "0.35s",
-              fontSize: "30px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLElement).style.backgroundColor = "rgba(255,255,255,0.12)";
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLElement).style.backgroundColor = "transparent";
-            }}
-            onClick={onOpenSettings}
-            title={isArabic ? "الإعدادات" : "Settings"}
-          >
-            <span className="material-symbols-outlined icon">settings</span>
-          </button>
+              <input
+                type="text"
+                placeholder={
+                  isArabic
+                    ? "ابحث عن منتج..."
+                    : "Search products..."
+                }
+                readOnly
+                onClick={onOpenSearch}
+              />
+            </div>
+          )}
         </div>
       </header>
 
-      {/* Side Menu */}
+      {/* =========================================================
+          SIDE MENU
+      ========================================================= */}
+
       <div className={`List ${menuOpen ? "open" : ""}`}>
+        {/* MENU LINKS */}
         <ul>
           <li>
             <a
               href="#short-sleeves"
               className="object"
-              onClick={(e) => { e.preventDefault(); handleMenuLink("short-sleeves"); }}
+              onClick={(e) => {
+                e.preventDefault();
+                handleMenuLink("short-sleeves");
+              }}
             >
-              {isArabic ? "أكمام قصيرة" : "Short Sleeves"}
+              {isArabic ? "أكمام قصيرة" : "SHORT SLEEVES"}
             </a>
           </li>
+
           <li>
             <a
               href="#long-sleeves"
               className="object"
-              onClick={(e) => { e.preventDefault(); handleMenuLink("long-sleeves"); }}
+              onClick={(e) => {
+                e.preventDefault();
+                handleMenuLink("long-sleeves");
+              }}
             >
-              {isArabic ? "أكمام طويلة" : "Long Sleeves"}
+              {isArabic ? "أكمام طويلة" : "LONG SLEEVES"}
             </a>
           </li>
+
           <li>
             <a
               href="#tank-top"
               className="object"
-              onClick={(e) => { e.preventDefault(); handleMenuLink("tank-top"); }}
+              onClick={(e) => {
+                e.preventDefault();
+                handleMenuLink("tank-top");
+              }}
             >
-              {isArabic ? "توبات" : "Tank Tops"}
+              {isArabic ? "توبات" : "TANK TOPS"}
             </a>
           </li>
+
           <li>
-            <Link href="/AboutUs" className="object">
-              {isArabic ? "من نحن" : "About Us"}
+            <Link
+              href="/AboutUs"
+              className="object"
+              onClick={() => setMenuOpen(false)}
+            >
+              {isArabic ? "من نحن" : "ABOUT US"}
             </Link>
           </li>
         </ul>
+        <div className="menu_bottom_logo">N</div>
       </div>
 
-      {/* Overlay to close menu */}
+      {/* =========================================================
+          OVERLAY
+      ========================================================= */}
+
       {menuOpen && (
         <div
-          style={{
-            position: "fixed",
-            inset: 0,
-            zIndex: 998,
-            background: "rgba(0,0,0,0.3)",
-          }}
+          className="menu_overlay"
           onClick={() => setMenuOpen(false)}
         />
       )}
-
-      <style jsx>{`
-        header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          gap: 16px;
-          flex-wrap: wrap;
-        }
-        header.rtl { direction: rtl; }
-        header.ltr { direction: ltr; }
-
-        .List {
-          position: fixed;
-          top: 85px;
-          left: -100%;
-          width: 300px;
-          height: calc(100vh - 85px);
-          background: rgba(20, 20, 20, 0.95);
-          backdrop-filter: blur(15px);
-          border-right: 1px solid rgba(255, 255, 255, 0.08);
-          transition: 0.5s;
-          z-index: 999;
-        }
-        .List.open { left: 0; }
-        .List ul { list-style: none; margin: 0; padding: 10px 0; }
-        .List li { width: 100%; }
-        .List .object {
-          display: flex;
-          width: 100%;
-          height: 70px;
-          padding: 0 25px;
-          color: #fff;
-          text-decoration: none;
-          align-items: center;
-          transition: 0.3s;
-          background: transparent;
-          border: none;
-          cursor: pointer;
-          font-size: 15px;
-          letter-spacing: 0.5px;
-        }
-        .List .object:hover {
-          background-color: rgba(255, 255, 255, 0.08);
-          padding-left: 35px;
-        }
-
-      `}</style>
     </>
   );
 }
+
+// ============================================== |
+// =======This code was written by Mohannad Ahmed |
+// ============================================== |

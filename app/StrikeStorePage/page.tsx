@@ -1,20 +1,18 @@
 "use client";
 
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback, lazy, Suspense } from "react";
+
+const aboutUsPath = "../AboutUs/";
+const AboutUs = lazy(() => import(aboutUsPath).catch(() => ({
+  default: () => (
+    <Link href={aboutUsPath}></Link>
+  )
+})));
 import { useRouter } from "next/navigation";
-import { initializeApp } from "firebase/app";
-import {
-  getFirestore,
-  collection,
-  onSnapshot,
-  query,
-} from "firebase/firestore";
-
-import Header from "../components/StrikeStoreHeader";
-import HeroSection from "../components/hero_section";
-import FeatureSection from "../components/features_setion";
-
+import { initializeApp, getApps, getApp } from "firebase/app";
+import { getFirestore, collection, onSnapshot, query } from "firebase/firestore";
 import "./page.css";
+import Link from "next/link";
 
 /* ================= FIREBASE CONFIG ================= */
 
@@ -29,7 +27,7 @@ const firebaseConfig = {
   measurementId: "G-Z1ME3G1FKX",
 };
 
-const app = initializeApp(firebaseConfig);
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 const db = getFirestore(app);
 
 /* ================= TYPES ================= */
@@ -52,7 +50,7 @@ interface CartProduct {
   quantity: number;
 }
 
-/* ================= FINAL PRICE HELPER ================= */
+/* ================= HELPERS ================= */
 
 const getFinalPrice = (product: Product) => {
   if (product.discount && product.discount > 0) {
@@ -75,9 +73,8 @@ function ProductImageSlider({ images, title }: { images: string[]; title: string
     );
   }
 
-  const goTo = (index: number) => {
+  const goTo = (index: number) =>
     setCurrentIndex((index + validImages.length) % validImages.length);
-  };
 
   return (
     <div className="product_image_wrapper">
@@ -89,7 +86,6 @@ function ProductImageSlider({ images, title }: { images: string[]; title: string
           className={`product_image ${i === currentIndex ? "slide_active" : ""}`}
         />
       ))}
-
       {validImages.length > 1 && (
         <>
           <button
@@ -129,24 +125,19 @@ function Toast({ message, visible }: { message: string; visible: boolean }) {
 /* ================= SEARCH BAR WITH SUGGESTIONS ================= */
 
 function SearchBarWithSuggestions({
-  products,
-  isArabic,
-  onAddToCart,
+  products, isArabic, onAddToCart,
 }: {
-  products: Product[];
-  isArabic: boolean;
-  onAddToCart: (product: Product) => void;
+  products: Product[]; isArabic: boolean; onAddToCart: (p: Product) => void;
 }) {
-  const [query, setQuery] = useState("");
+  const [queryVal, setQueryVal] = useState("");
   const [focused, setFocused] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const suggestions = query.trim().length === 0
+  const suggestions = queryVal.trim().length === 0
     ? []
-    : products.filter(
-        (p) =>
-          p.title.toLowerCase().includes(query.toLowerCase()) ||
-          p.description.toLowerCase().includes(query.toLowerCase())
+    : products.filter((p) =>
+        p.title.toLowerCase().includes(queryVal.toLowerCase()) ||
+        p.description.toLowerCase().includes(queryVal.toLowerCase())
       ).slice(0, 6);
 
   useEffect(() => {
@@ -159,7 +150,7 @@ function SearchBarWithSuggestions({
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
-  const showDropdown = focused && query.trim().length > 0;
+  const showDropdown = focused && queryVal.trim().length > 0;
 
   return (
     <div className="smart_search_wrapper" ref={containerRef}>
@@ -168,17 +159,14 @@ function SearchBarWithSuggestions({
         <input
           type="text"
           placeholder={isArabic ? "ابحث عن منتج..." : "Search products..."}
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          value={queryVal}
+          onChange={(e) => setQueryVal(e.target.value)}
           onFocus={() => setFocused(true)}
           className="smart_search_input"
           autoComplete="off"
         />
-        {query && (
-          <button
-            className="search_clear_btn"
-            onClick={() => { setQuery(""); setFocused(false); }}
-          >
+        {queryVal && (
+          <button className="search_clear_btn" onClick={() => { setQueryVal(""); setFocused(false); }}>
             <span className="material-symbols-outlined">close</span>
           </button>
         )}
@@ -212,12 +200,7 @@ function SearchBarWithSuggestions({
                 </div>
                 <button
                   className="suggestion_add_btn"
-                  onClick={() => {
-                    onAddToCart(product);
-                    setQuery("");
-                    setFocused(false);
-                  }}
-                  title={isArabic ? "أضف للسلة" : "Add to cart"}
+                  onClick={() => { onAddToCart(product); setQueryVal(""); setFocused(false); }}
                 >
                   <span className="material-symbols-outlined">shopping_bag</span>
                 </button>
@@ -233,20 +216,12 @@ function SearchBarWithSuggestions({
 /* ================= SETTINGS MODAL ================= */
 
 function SettingsModal({
-  visible,
-  onClose,
-  language,
-  onLanguageChange,
-  isArabic,
+  visible, onClose, language, onLanguageChange, isArabic,
 }: {
-  visible: boolean;
-  onClose: () => void;
-  language: string;
-  onLanguageChange: (lang: "en" | "ar") => void;
-  isArabic: boolean;
+  visible: boolean; onClose: () => void; language: string;
+  onLanguageChange: (lang: "en" | "ar") => void; isArabic: boolean;
 }) {
   if (!visible) return null;
-
   return (
     <div className="settings_modal_overlay" onClick={onClose}>
       <div className="settings_modal" onClick={(e) => e.stopPropagation()}>
@@ -260,16 +235,10 @@ function SettingsModal({
           <div className="setting_group">
             <label className="setting_label">{isArabic ? "اللغة" : "Language"}</label>
             <div className="language_options">
-              <button
-                className={`lang_option ${language === "en" ? "active" : ""}`}
-                onClick={() => onLanguageChange("en")}
-              >
+              <button className={`lang_option ${language === "en" ? "active" : ""}`} onClick={() => onLanguageChange("en")}>
                 🇺🇸 English
               </button>
-              <button
-                className={`lang_option ${language === "ar" ? "active" : ""}`}
-                onClick={() => onLanguageChange("ar")}
-              >
+              <button className={`lang_option ${language === "ar" ? "active" : ""}`} onClick={() => onLanguageChange("ar")}>
                 🇪🇬 العربية
               </button>
             </div>
@@ -280,191 +249,256 @@ function SettingsModal({
   );
 }
 
-/* ================= MARKET LIST (CART SIDEBAR) ================= */
+/* ================= HERO SECTION ================= */
 
-function MarketList({ isArabic = false }: { isArabic?: boolean }) {
-  const router = useRouter();
-  const [items, setItems] = useState<CartProduct[]>([]);
-
-  useEffect(() => {
-    const updateItems = () => {
-      const savedCart = localStorage.getItem("strike_cart");
-      if (savedCart) {
-        try { setItems(JSON.parse(savedCart)); } catch { setItems([]); }
-      } else {
-        setItems([]);
-      }
-    };
-    updateItems();
-    window.addEventListener("cartUpdated", updateItems);
-    return () => window.removeEventListener("cartUpdated", updateItems);
-  }, []);
-
-  const removeItem = (productId: string) => {
-    const updated = items.filter((item) => item.id !== productId);
-    setItems(updated);
-    localStorage.setItem("strike_cart", JSON.stringify(updated));
-    window.dispatchEvent(new Event("cartUpdated"));
-  };
-
-  const increaseQuantity = (productId: string) => {
-    const updated = items.map((item) =>
-      item.id === productId ? { ...item, quantity: item.quantity + 1 } : item
-    );
-    setItems(updated);
-    localStorage.setItem("strike_cart", JSON.stringify(updated));
-    window.dispatchEvent(new Event("cartUpdated"));
-  };
-
-  const decreaseQuantity = (productId: string) => {
-    const updated = items.map((item) =>
-      item.id === productId ? { ...item, quantity: Math.max(1, item.quantity - 1) } : item
-    );
-    setItems(updated);
-    localStorage.setItem("strike_cart", JSON.stringify(updated));
-    window.dispatchEvent(new Event("cartUpdated"));
-  };
-
-  const closeCart = () => {
-    const cartSidebar = document.querySelector(".market_list") as HTMLElement;
-    if (cartSidebar) cartSidebar.style.right = "-420px";
-  };
-
-  const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-
+function HeroSection({ isArabic, onShopNow, onLearnMore }: {
+  isArabic: boolean; onShopNow: () => void; onLearnMore: () => void;
+}) {
   return (
-    <div className="market_list">
-      <div className="market_header">
-        <h2>{isArabic ? "سلة التسوق" : "Shopping Cart"}</h2>
-        <button className="close_cart" onClick={closeCart}>
-          <span className="material-symbols-outlined">close</span>
-        </button>
-      </div>
-
-      {items.length > 0 ? (
-        <>
-          <div className="market_products">
-            {items.map((item) => (
-              <div key={item.id} className="cart_product">
-                <div className="cart_product_image">
-                  <img src={item.image} alt={item.title} />
-                </div>
-                <div className="cart_product_info">
-                  <h3>{item.title}</h3>
-                  <p>{item.price.toFixed(2)} EGP</p>
-                  <div className="quantity_controls">
-                    <button className="qty_btn" onClick={() => decreaseQuantity(item.id)}>−</button>
-                    <span className="qty_display">{item.quantity}</span>
-                    <button className="qty_btn" onClick={() => increaseQuantity(item.id)}>+</button>
-                  </div>
-                </div>
-                <button className="remove_btn" onClick={() => removeItem(item.id)}>
-                  <span className="material-symbols-outlined">delete</span>
-                </button>
-              </div>
-            ))}
-          </div>
-          <div className="market_footer">
-            <div className="total_price">
-              <span>{isArabic ? "المجموع" : "Total"}:</span>
-              <h3>{total.toFixed(2)} EGP</h3>
-            </div>
-            <button className="checkout_btn" onClick={() => { closeCart(); router.push("/checkout"); }}>
-              {isArabic ? "الدفع" : "Checkout"}
-            </button>
-          </div>
-        </>
-      ) : (
-        <div className="empty_cart">
-          <span className="material-symbols-outlined">shopping_cart</span>
-          <p>{isArabic ? "السلة فارغة" : "Your cart is empty"}</p>
+    <section className="hero_section">
+      <div className="hero_content">
+        <div className="hero_badge">
+          {isArabic ? "ملابس رياضية احترافية" : "PREMIUM COMPRESSION WEAR"}
         </div>
-      )}
-    </div>
+        <img src="./images/StrikeWhiteLogo.png" alt="STRIKE." className="strike_hero_logo_img" onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.nextElementSibling?.classList.remove('hidden'); }} />
+        <h1 className="Strike_Logo_for_hero_section hidden">
+          STRIKE<span className="dot">.</span>
+        </h1>
+        <p className="hero_description">
+          {isArabic
+            ? "اكتشف قوة الأداء الحقيقي. ملابس رياضية مصممة للرياضيين الجادين — خامات متطورة، تصميم محكم، وأداء يتخطى الحدود."
+            : "Unlock your true performance. Engineered compression wear built for serious athletes — advanced fabrics, sculpted fit, and performance that breaks limits."}
+        </p>
+        <div className="hero_buttons">
+          <button className="shop_btn" onClick={onShopNow}>
+            {isArabic ? "تسوق الآن" : "Shop Now"}
+          </button>
+          <button className="learn_btn" onClick={onLearnMore}>
+            {isArabic ? "اعرف أكثر" : "Learn More"}
+          </button>
+        </div>
+      </div>
+    </section>
   );
 }
 
-/* ================= MAIN COMPONENT ================= */
+/* ================= FEATURE SECTION ================= */
 
-function MainPageEN() {
+function FeatureSection({ isArabic }: { isArabic: boolean }) {
+  const features = isArabic ? [
+    { icon: "bolt", title: "أداء أقصى", description: "خامة ضاغطة مصممة لدعم العضلات أثناء الحركات المتفجرة." },
+    { icon: "air", title: "راحة فائقة", description: "تقنية متطورة لامتصاص العرق تبقيك منتعشاً وجافاً." },
+    { icon: "verified", title: "جودة عالية", description: "خامات مختبرة من قبل رياضيين محترفين تدوم طويلاً." },
+  ] : [
+    { icon: "bolt", title: "Maximum Performance", description: "Engineered compression fabric that supports muscles during explosive movements." },
+    { icon: "air", title: "Breathable Comfort", description: "Advanced moisture-wicking technology keeps you cool, dry, and focused." },
+    { icon: "verified", title: "Premium Quality", description: "Athlete-tested materials built to outlast your toughest training days." },
+  ];
+
+  return (
+    <section className="features_section" id="target_box">
+      {features.map((f, i) => (
+        <div className="feature_box" key={i}>
+          <span className="material-symbols-outlined feature_icon">{f.icon}</span>
+          <h2>{f.title}</h2>
+          <p>{f.description}</p>
+        </div>
+      ))}
+    </section>
+  );
+}
+
+/* ================= SIDE MENU (fixed: opens below header) ================= */
+
+function SideMenu({ isArabic, isOpen, onClose, onNavigate }: {
+  isArabic: boolean; isOpen: boolean; onClose: () => void;
+  onNavigate: (id: string) => void;
+}) {
+  const links = isArabic ? [
+    { id: "short-sleeves", label: "أكمام قصيرة", icon: "fitness_center" },
+    { id: "long-sleeves", label: "أكمام طويلة", icon: "sports_gymnastics" },
+    { id: "tank-top", label: "تانك توب", icon: "self_improvement" },
+    { id: "target_box", label: "المميزات", icon: "star" },
+    { id: "about-us", label: "من نحن", icon: "info" },
+  ] : [
+    { id: "short-sleeves", label: "Short Sleeves", icon: "fitness_center" },
+    { id: "long-sleeves", label: "Long Sleeves", icon: "sports_gymnastics" },
+    { id: "tank-top", label: "Tank Tops", icon: "self_improvement" },
+    { id: "target_box", label: "Features", icon: "star" },
+    { id: "about-us", label: "About Us", icon: "info" },
+  ];
+
+  return (
+    <nav className={`List ${isOpen ? "open" : ""} ${isArabic ? "rtl" : "ltr"}`}>
+      <ul>
+        {links.map((link) => (
+          <li key={link.id}>
+            <a
+  href={link.id === "about-us" ? "../AboutUs/" : `#${link.id}`}
+  className="object"
+  onClick={(e) => {
+    if (link.id === "about-us") {
+      onClose();
+      return;
+    }
+
+    e.preventDefault();
+    onNavigate(link.id);
+    onClose();
+  }}
+>
+              <span className="material-symbols-outlined object_icon">{link.icon}</span>
+              {link.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  );
+}
+
+/* ================= MARKET LIST / CART (fixed: closes properly) ================= */
+
+function MarketList({ isArabic, isOpen, items, onClose, onRemove, onIncrease, onDecrease }: {
+  isArabic: boolean; isOpen: boolean; items: CartProduct[];
+  onClose: () => void; onRemove: (id: string) => void;
+  onIncrease: (id: string) => void; onDecrease: (id: string) => void;
+}) {
+  const router = useRouter();
+  const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+  return (
+    <>
+      {isOpen && <div className="cart_overlay" onClick={onClose} />}
+      <aside className={`market_list ${isOpen ? "open" : ""} ${isArabic ? "rtl" : "ltr"}`}>
+        <div className="market_header">
+          <h2>{isArabic ? "سلة التسوق" : "Shopping Cart"}</h2>
+          <button className="close_cart" onClick={onClose}>
+            <span className="material-symbols-outlined">close</span>
+          </button>
+        </div>
+
+        {items.length > 0 ? (
+          <>
+            <div className="market_products">
+              {items.map((item) => (
+                <div key={item.id} className="cart_product">
+                  <div className="cart_product_image">
+                    <img src={item.image} alt={item.title} />
+                  </div>
+                  <div className="cart_product_info">
+                    <h3>{item.title}</h3>
+                    <p>{item.price.toFixed(2)} EGP</p>
+                    <div className="quantity_controls">
+                      <button className="qty_btn" onClick={() => onDecrease(item.id)}>−</button>
+                      <span className="qty_display">{item.quantity}</span>
+                      <button className="qty_btn" onClick={() => onIncrease(item.id)}>+</button>
+                    </div>
+                  </div>
+                  <button className="remove_btn" onClick={() => onRemove(item.id)}>
+                    <span className="material-symbols-outlined">delete</span>
+                  </button>
+                </div>
+              ))}
+            </div>
+            <div className="market_footer">
+              <div className="total_price">
+                <span>{isArabic ? "المجموع" : "Total"}:</span>
+                <h3>{total.toFixed(2)} EGP</h3>
+              </div>
+              <button className="checkout_btn" onClick={() => { onClose(); router.push("/checkout"); }}>
+                {isArabic ? "الدفع" : "Checkout"}
+              </button>
+            </div>
+          </>
+        ) : (
+          <div className="empty_cart">
+            <span className="material-symbols-outlined">shopping_cart</span>
+            <p>{isArabic ? "السلة فارغة" : "Your cart is empty"}</p>
+          </div>
+        )}
+      </aside>
+    </>
+  );
+}
+
+/* ================= HEADER (with settings/cart ABOVE search bar) ================= */
+
+function Header({
+  isArabic, products, cartCount, isMenuOpen,
+  onToggleMenu, onToggleCart, onOpenSettings, onAddToCart,
+}: {
+  isArabic: boolean; products: Product[]; cartCount: number; isMenuOpen: boolean;
+  onToggleMenu: () => void; onToggleCart: () => void;
+  onOpenSettings: () => void; onAddToCart: (p: Product) => void;
+}) {
+  return (
+    <header className="strike_header">
+      <div className="header_top_row">
+        <div className="header_left">
+          <button className={`List_box ${isMenuOpen ? "active" : ""}`} onClick={onToggleMenu}>
+            <div className="top_line"></div>
+            <div className="middle_line"></div>
+            <div className="end_line"></div>
+          </button>
+          <a href="#" className="Logo">
+            <img src="./images/StrikeWhiteLogo.png" alt="STRIKE." className="strike_header_logo_img" onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.nextElementSibling?.classList.remove('hidden'); }} />
+            <span className="Strike_Logo_For_Header hidden">STRIKE<span className="dot">.</span></span>
+          </a>
+        </div>
+
+        <div className="header_right">
+          <div className="market_cart">
+            <button className="cart_btn" onClick={onToggleCart}>
+              <span className="material-symbols-outlined">shopping_bag</span>
+              {cartCount > 0 && <span className="counter">{cartCount}</span>}
+            </button>
+            <button className="settings_btn" onClick={onOpenSettings}>
+              <span className="material-symbols-outlined">settings</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="header_bottom_row">
+        <SearchBarWithSuggestions products={products} isArabic={isArabic} onAddToCart={onAddToCart} />
+      </div>
+    </header>
+  );
+}
+
+/* ================= MAIN PAGE ================= */
+
+export default function MainPageEN() {
   const [allProducts, setAllProducts] = useState<Product[]>([]);
-  const [shortSleevesProducts, setShortSleevesProducts] = useState<Product[]>([]);
-  const [longSleevesProducts, setLongSleevesProducts] = useState<Product[]>([]);
-  const [tankTopProducts, setTankTopProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [language, setLanguage] = useState<"en" | "ar">("en");
   const isArabic = language === "ar";
-  const [toastMessage, setToastMessage] = useState("");
-  const [toastVisible, setToastVisible] = useState(false);
+
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [settingsModalVisible, setSettingsModalVisible] = useState(false);
 
-  const shortSleevesRef = useRef<HTMLElement>(null);
-  const longSleevesRef = useRef<HTMLElement>(null);
-  const tankTopRef = useRef<HTMLElement>(null);
+  const [cartItems, setCartItems] = useState<CartProduct[]>([]);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastVisible, setToastVisible] = useState(false);
+
   const shortSleevesScrollRef = useRef<HTMLDivElement>(null);
   const longSleevesScrollRef = useRef<HTMLDivElement>(null);
   const tankTopScrollRef = useRef<HTMLDivElement>(null);
 
-  /* ---- Language ---- */
-  useEffect(() => {
-    const saved = localStorage.getItem("UserLanguage");
-    setLanguage(saved === "Arabic" ? "ar" : "en");
-  }, []);
+  const shortSleevesProducts = allProducts.filter((p) => p.category === "Short Sleeves Compression");
+  const longSleevesProducts = allProducts.filter((p) => p.category === "Long Sleeves Compression");
+  const tankTopProducts = allProducts.filter((p) => p.category === "Top Tank Compression");
 
-  /* ---- Auto Reload (once per session) ---- */
   useEffect(() => {
-    const alreadyReloaded = sessionStorage.getItem("page_reloaded");
-    if (!alreadyReloaded) {
-      sessionStorage.setItem("page_reloaded", "true");
+    if (!sessionStorage.getItem("reloaded")) {
+      sessionStorage.setItem("reloaded", "true");
       window.location.reload();
     }
-    return () => { sessionStorage.removeItem("page_reloaded"); };
   }, []);
 
-  /* ---- Toast ---- */
-  const showToast = (msg: string) => {
-    setToastMessage(msg);
-    setToastVisible(true);
-    setTimeout(() => setToastVisible(false), 2500);
-  };
-
-  /* ---- Language Change ---- */
-  const handleLanguageChange = (newLanguage: "en" | "ar") => {
-    setLanguage(newLanguage);
-    localStorage.setItem("UserLanguage", newLanguage === "ar" ? "Arabic" : "English");
-    setSettingsModalVisible(false);
-    window.location.reload();
-  };
-
-  /* ---- Add to Cart ---- */
-  const addToCart = useCallback(
-    (product: Product) => {
-      const savedCart = localStorage.getItem("strike_cart");
-      const cart: CartProduct[] = savedCart ? JSON.parse(savedCart) : [];
-      const existing = cart.find((item) => item.id === product.id);
-      const finalPrice = getFinalPrice(product);
-
-      if (existing) {
-        existing.quantity += 1;
-        existing.price = finalPrice;
-      } else {
-        cart.push({
-          id: product.id,
-          title: product.title,
-          image: product.images?.[0] ?? "",
-          price: finalPrice,
-          quantity: 1,
-        });
-      }
-
-      localStorage.setItem("strike_cart", JSON.stringify(cart));
-      window.dispatchEvent(new Event("cartUpdated"));
-      showToast(`${product.title} ${isArabic ? "تمت الإضافة للسلة" : "added to cart!"}`);
-    },
-    [isArabic]
-  );
-
-  /* ---- Get Products ---- */
+  /* ---- Firebase dynamic fetch ---- */
   useEffect(() => {
     const q = query(collection(db, "products"));
     const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -482,46 +516,99 @@ function MainPageEN() {
         });
       });
       setAllProducts(allProds);
-      setShortSleevesProducts(allProds.filter((p) => p.category === "Short Sleeves Compression"));
-      setLongSleevesProducts(allProds.filter((p) => p.category === "Long Sleeves Compression"));
-      setTankTopProducts(allProds.filter((p) => p.category === "Top Tank Compression"));
       setLoading(false);
     });
     return () => unsubscribe();
   }, []);
 
-  /* ---- Smooth Scroll to Section ---- */
-  const scrollToSection = (sectionId: string) => {
+  useEffect(() => {
+    const saved = localStorage.getItem("UserLanguage");
+    if (saved === "Arabic") setLanguage("ar");
+  }, []);
+
+  useEffect(() => {
+    const saved = localStorage.getItem("strike_cart");
+    if (saved) {
+      try { setCartItems(JSON.parse(saved)); } catch { setCartItems([]); }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isCartOpen || isMenuOpen) document.body.classList.add("no_scroll");
+    else document.body.classList.remove("no_scroll");
+    return () => document.body.classList.remove("no_scroll");
+  }, [isCartOpen, isMenuOpen]);
+
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    setToastVisible(true);
+    setTimeout(() => setToastVisible(false), 2500);
+  };
+
+  const handleLanguageChange = (newLanguage: "en" | "ar") => {
+    setLanguage(newLanguage);
+    localStorage.setItem("UserLanguage", newLanguage === "ar" ? "Arabic" : "English");
+    setSettingsModalVisible(false);
+    window.location.reload();
+  };
+
+  const addToCart = useCallback((product: Product) => {
+    setCartItems((prev) => {
+      const existing = prev.find((item) => item.id === product.id);
+      const finalPrice = getFinalPrice(product);
+      const updated = existing
+        ? prev.map((item) => item.id === product.id ? { ...item, quantity: item.quantity + 1, price: finalPrice } : item)
+        : [...prev, { id: product.id, title: product.title, image: product.images?.[0] ?? "", price: finalPrice, quantity: 1 }];
+      localStorage.setItem("strike_cart", JSON.stringify(updated));
+      return updated;
+    });
+    showToast(`${product.title} ${isArabic ? "تمت الإضافة للسلة" : "added to cart!"}`);
+  }, [isArabic]);
+
+  const removeItem = (id: string) => {
+    setCartItems((prev) => {
+      const updated = prev.filter((item) => item.id !== id);
+      localStorage.setItem("strike_cart", JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  const increaseQuantity = (id: string) => {
+    setCartItems((prev) => {
+      const updated = prev.map((item) => item.id === id ? { ...item, quantity: item.quantity + 1 } : item);
+      localStorage.setItem("strike_cart", JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  const decreaseQuantity = (id: string) => {
+    setCartItems((prev) => {
+      const updated = prev.map((item) => item.id === id ? { ...item, quantity: Math.max(1, item.quantity - 1) } : item);
+      localStorage.setItem("strike_cart", JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+
+  const scrollToSection = (id: string) => {
     setTimeout(() => {
-      const el = document.getElementById(sectionId);
-      if (el) {
-        el.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 50);
   };
 
-  /* ---- Slider Scroll ---- */
-  const scroll = (
-    containerRef: React.RefObject<HTMLDivElement | null>,
-    direction: "left" | "right"
-  ) => {
-    containerRef.current?.scrollBy({ left: direction === "left" ? -350 : 350, behavior: "smooth" });
+  const scroll = (ref: React.RefObject<HTMLDivElement | null>, dir: "left" | "right") => {
+    ref.current?.scrollBy({ left: dir === "left" ? -350 : 350, behavior: "smooth" });
   };
 
-  /* ---- Product Slider Section ---- */
   const ProductSlider = ({
-    title,
-    products,
-    scrollRef,
-    sectionRef,
+    title, products, scrollRef, sectionId,
   }: {
-    title: string;
-    products: Product[];
-    scrollRef: React.RefObject<HTMLDivElement | null>;
-    sectionRef: React.RefObject<HTMLElement | null>;
-    sectionId: string;
+    title: string; products: Product[];
+    scrollRef: React.RefObject<HTMLDivElement | null>; sectionId: string;
   }) => (
-    <section className="slider_section" ref={sectionRef}>
+    <section className="slider_section" id={sectionId}>
       <div className="slider_header">
         <h2 className="slider_title">{title}</h2>
         <div className="slider_controls">
@@ -529,7 +616,6 @@ function MainPageEN() {
           <button className="slider_arrow" onClick={() => scroll(scrollRef, "right")}>›</button>
         </div>
       </div>
-
       {products.length === 0 ? (
         <div className="slider_empty">{isArabic ? "سيتم الاضافة قريباً" : "Coming Soon"}</div>
       ) : (
@@ -538,15 +624,7 @@ function MainPageEN() {
             <div className="product_card" key={product.id}>
               <div className="card_image_area">
                 <ProductImageSlider images={product.images ?? []} title={product.title} />
-                {product.discount !== 0 && (
-                  <div className="discount_badge">-{product.discount}%</div>
-                )}
-                <div className="product_overlay">
-                  <button className="add_to_cart_btn" onClick={() => addToCart(product)}>
-                    <span className="material-symbols-outlined">shopping_bag</span>
-                    {isArabic ? "أضف للسلة" : "Add To Cart"}
-                  </button>
-                </div>
+                {product.discount !== 0 && <div className="discount_badge">-{product.discount}%</div>}
               </div>
               <div className="product_info">
                 <h3 className="product_title">{product.title}</h3>
@@ -561,6 +639,10 @@ function MainPageEN() {
                     <span className="product_price">{product.price} EGP</span>
                   )}
                 </div>
+                <button className="add_to_cart_btn" onClick={() => addToCart(product)}>
+                  <span className="material-symbols-outlined">shopping_bag</span>
+                  {isArabic ? "أضف للسلة" : "Add To Cart"}
+                </button>
               </div>
             </div>
           ))}
@@ -583,98 +665,80 @@ function MainPageEN() {
         isArabic={isArabic}
       />
 
-      <MarketList isArabic={isArabic} />
+      <SideMenu
+        isArabic={isArabic}
+        isOpen={isMenuOpen}
+        onClose={() => setIsMenuOpen(false)}
+        onNavigate={scrollToSection}
+      />
+
+      <MarketList
+        isArabic={isArabic}
+        isOpen={isCartOpen}
+        items={cartItems}
+        onClose={() => setIsCartOpen(false)}
+        onRemove={removeItem}
+        onIncrease={increaseQuantity}
+        onDecrease={decreaseQuantity}
+      />
 
       <div className={`container ${isArabic ? "rtl" : "ltr"}`}>
-        {/* ===== HEADER ===== */}
-        {/* 
-          Pass onOpenSearch and onOpenSettings as before.
-          The search bar with suggestions is now INSIDE the header area below,
-          replacing the old header search input + search modal pattern.
-          Update StrikeStoreHeader to accept a `searchSlot` prop,
-          or embed SearchBarWithSuggestions directly in the header JSX.
-          
-          For drop-in compatibility, we keep Header as-is and overlay
-          the smart search below in a sticky top bar if needed.
-          The simplest approach: pass onOpenSearch to open the dropdown logic,
-          but the new smart search is self-contained in the header's Search_box area.
-          
-          ACTION: Replace the Search_box inside StrikeStoreHeader with:
-          <SearchBarWithSuggestions products={allProducts} isArabic={isArabic} onAddToCart={addToCart} />
-          
-          Until then, onOpenSearch just focuses the smart bar — handled below.
-        */}
         <Header
           isArabic={isArabic}
-          onOpenSearch={() => {
-            /* Smart search is now inline — no modal needed */
-          }}
+          products={allProducts}
+          cartCount={cartCount}
+          isMenuOpen={isMenuOpen}
+          onToggleMenu={() => setIsMenuOpen((v) => !v)}
+          onToggleCart={() => setIsCartOpen((v) => !v)}
           onOpenSettings={() => setSettingsModalVisible(true)}
-          /* NEW PROP — pass this down so Header can render the smart search */
-          searchSlot={
-            <SearchBarWithSuggestions
-              products={allProducts}
-              isArabic={isArabic}
-              onAddToCart={addToCart}
-            />
-          }
+          onAddToCart={addToCart}
         />
 
-        {/* ===== HERO ===== */}
-        {/* 
-          HeroSection buttons now scroll properly via scrollToSection.
-          Pass scroll helpers as props OR use the same scrollToSection logic 
-          already in HeroSection (it uses document.getElementById — works fine 
-          as long as the section IDs match).
-          
-          IDs used:
-            "short-sleeves"  → first product section  ✅
-            "target_box"     → features section        ✅
-        */}
-        <HeroSection />
+        <HeroSection
+          isArabic={isArabic}
+          onShopNow={() => scrollToSection("short-sleeves")}
+          onLearnMore={() => scrollToSection("target_box")}
+        />
 
-        {/* ===== FEATURES ===== */}
-        {/* id="target_box" is already set inside FeatureSection */}
-        <FeatureSection />
+        <FeatureSection isArabic={isArabic} />
 
-        {/* ===== PRODUCTS ===== */}
         {loading ? (
           <div className="sliders_loading">
             <div className="loading_spinner"></div>
-            <p>{isArabic ? "جاري تحميل المنتجات..." : "Loading Products..."}</p>
+            <p>{isArabic ? "جاري تحميل المنتجات من قاعدة البيانات..." : "Loading Products from Database..."}</p>
           </div>
         ) : (
-          /* 
-            id="short-sleeves" is on the first ProductSlider section below.
-            "Shop Now" in HeroSection links to #short-sleeves → scrollIntoView works.
-          */
-          <div className="sliders_wrapper" id="long-sleeves">
+          <div className="sliders_wrapper">
             <ProductSlider
               title={isArabic ? "أكمام قصيره" : "Short Sleeves Compression"}
               products={shortSleevesProducts}
               scrollRef={shortSleevesScrollRef}
-              sectionRef={shortSleevesRef}
-              sectionId="Short-sleeves"
+              sectionId="short-sleeves"
             />
             <ProductSlider
               title={isArabic ? "أكمام طويلة" : "Long Sleeves Compression"}
               products={longSleevesProducts}
               scrollRef={longSleevesScrollRef}
-              sectionRef={longSleevesRef}
               sectionId="long-sleeves"
             />
             <ProductSlider
               title={isArabic ? "تانك توب" : "Tank Top Compression"}
               products={tankTopProducts}
               scrollRef={tankTopScrollRef}
-              sectionRef={tankTopRef}
               sectionId="tank-top"
             />
           </div>
         )}
+
+        {/* ===== ABOUT US SECTION (Next.js Dynamic Component Rendered here) ===== */}
+        <section className="about_us_section" id="about-us">
+          <Suspense fallback={<div className="sliders_loading"><div className="loading_spinner"></div></div>}>
+            <AboutUs />
+          </Suspense>
+        </section>
       </div>
 
-      <footer className="main_footer" id="tank-top">
+      <footer className="main_footer">
         <div className="footer_wrapper">
           <div className="footer_bottom">
             <p className="footer_copyright">© 2026 STRIKE.</p>
@@ -685,4 +749,6 @@ function MainPageEN() {
   );
 }
 
-export default MainPageEN;
+// ============================================== |
+// =======This code was written by Mohannad Ahmed |
+// ============================================== |
