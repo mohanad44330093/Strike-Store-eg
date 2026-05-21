@@ -695,7 +695,6 @@ cancel_link: cancelLink
               >
                 {submitting ? t.processing : t.confirmOrder}
               </button>
-
           </div>
         )}
       </div>
