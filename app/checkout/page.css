@@ -1584,6 +1584,10 @@ select option {
     border-radius: 14px;
   }
 
+  .size_modal_close {
+    z-index: 10000;
+  }
+
 }
 
 @media (max-width: 1000px) {
@@ -1596,6 +1600,10 @@ select option {
         position: relative;
         top: 0;
     }
+
+    .size_modal_close {
+    z-index: 10000;
+  }
 
 }
 
@@ -1614,6 +1622,10 @@ select option {
     .summary_card h2 {
         font-size: 21px;
     }
+
+    .size_modal_close {
+    z-index: 10000;
+  }
 
 }
 
@@ -1636,6 +1648,10 @@ select option {
     position: relative;
     top: 0;
     order: -1;
+  }
+
+  .size_modal_close {
+    z-index: 10000;
   }
 }
 
@@ -1664,5 +1680,9 @@ select option {
   .co_summary_card {
     padding: 20px 16px;
     border-radius: 18px;
+  }
+
+  .size_modal_close {
+    z-index: 10000;
   }
 }

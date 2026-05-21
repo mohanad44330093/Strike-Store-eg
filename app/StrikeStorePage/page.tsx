@@ -650,14 +650,14 @@ function MainPageEN() {
           */
           <div className="sliders_wrapper" id="long-sleeves">
             <ProductSlider
-              title={isArabic ? "قمصان بدون أكمام" : "Short Sleeves Compression"}
+              title={isArabic ? "أكمام قصيره" : "Short Sleeves Compression"}
               products={shortSleevesProducts}
               scrollRef={shortSleevesScrollRef}
               sectionRef={shortSleevesRef}
               sectionId="Short-sleeves"
             />
             <ProductSlider
-              title={isArabic ? "قمصان بأكمام طويلة" : "Long Sleeves Compression"}
+              title={isArabic ? "أكمام طويلة" : "Long Sleeves Compression"}
               products={longSleevesProducts}
               scrollRef={longSleevesScrollRef}
               sectionRef={longSleevesRef}
