@@ -1111,6 +1111,7 @@ select option {
   color: white;
   cursor: pointer;
   font-size: 20px;
+  z-index: 99999;
 }
 
 /* ================= LOADING ================= */
