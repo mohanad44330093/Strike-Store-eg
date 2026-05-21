@@ -87,8 +87,8 @@ const SIZES = [
     width: "30cm - 40cm",
   },
   {
-    value: "XXL",
-    label: "xXL",
+    value: "2XL",
+    label: "2XL",
     weight: "100 - 115",
     height: "45cm - 60cm",
     width: "30cm - 40cm",
