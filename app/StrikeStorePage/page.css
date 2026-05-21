@@ -1,7 +1,7 @@
 /* ================================================================
-   STRIKE STORE — COMPLETE STYLESHEET
-   Fixed: Cart Sidebar, Menu positioning, Full-width layout
-   Version: Final
+   STRIKE STORE — COMPLETE STYLESHEET (FULL WIDTH FIX)
+   Fixed: Full width layout, no container padding issues
+   Version: Final 2.0
    ================================================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&display=swap');
@@ -54,7 +54,7 @@
 }
 
 /* ================================================================
-   RESET & GLOBAL
+   RESET & GLOBAL - FULL WIDTH
    ================================================================ */
 
 *, *::before, *::after {
@@ -66,6 +66,7 @@
 
 html, body {
   width: 100%;
+  max-width: 100%;
   overflow-x: hidden;
 }
 
@@ -82,34 +83,16 @@ html {
 body {
   min-height: 100vh;
   width: 100%;
-}
-
-button, input, textarea, select {
-  font-family: inherit;
-  font-size: inherit;
-}
-
-img {
-  display: block;
-  max-width: 100%;
-  object-fit: cover;
-}
-
-/* ================================================================
-   FULL-WIDTH LAYOUT FIX
-   ================================================================ */
-
-#__next, main, .app_container {
-  width: 100%;
   max-width: 100%;
   overflow-x: hidden;
 }
 
-.container {
+/* Remove any container restrictions */
+.container, .main-container, .page-wrapper {
   width: 100%;
-  padding-inline: clamp(18px, 4vw, 32px);
-  margin-inline: auto;
-  max-width: 1320px;
+  max-width: 100%;
+  padding: 0;
+  margin: 0;
 }
 
 /* ================================================================
@@ -259,7 +242,7 @@ img {
 .lang_option.active { background: var(--white); color: #000; border-color: var(--white); }
 
 /* ================================================================
-   MARKET LIST — CART SIDEBAR (FIXED: closed by default)
+   MARKET LIST — CART SIDEBAR
    ================================================================ */
 
 .market_list {
@@ -477,7 +460,7 @@ img {
 .empty_cart p { font-size: 14px; letter-spacing: 0.05em; font-weight: 500; }
 
 /* ================================================================
-   HEADER - COMPLETE FIXED VERSION
+   HEADER - FULL WIDTH
    ================================================================ */
 
 header {
@@ -678,7 +661,7 @@ header {
 }
 
 /* ================================================================
-   SIDE MENU (List) - FIXED POSITION (below header)
+   SIDE MENU (List)
    ================================================================ */
 
 .List {
@@ -762,7 +745,6 @@ header {
   transform: scaleY(1);
 }
 
-/* Menu Overlay */
 .menu_overlay {
   position: fixed;
   inset: 0;
@@ -778,7 +760,7 @@ header {
 }
 
 /* ================================================================
-   RTL SUPPORT FOR HEADER & MENU
+   RTL SUPPORT
    ================================================================ */
 
 header.rtl {
@@ -971,7 +953,7 @@ header.rtl {
 @keyframes _spin { to { transform: rotate(360deg); } }
 
 /* ================================================================
-   SLIDERS WRAPPER
+   SLIDERS WRAPPER - FULL WIDTH
    ================================================================ */
 
 .sliders_wrapper {
@@ -979,13 +961,19 @@ header.rtl {
   display: flex;
   flex-direction: column;
   gap: clamp(40px, 10vw, 72px);
+  width: 100%;
+  max-width: 100%;
 }
 
 /* ================================================================
-   SLIDER SECTION
+   SLIDER SECTION - FULL WIDTH
    ================================================================ */
 
-.slider_section { position: relative; }
+.slider_section { 
+  position: relative;
+  width: 100%;
+  padding: 0 clamp(18px, 4vw, 32px);
+}
 
 .slider_header {
   display: flex;
@@ -994,6 +982,10 @@ header.rtl {
   margin-bottom: clamp(16px, 4vw, 28px);
   padding-bottom: clamp(12px, 3vw, 18px);
   border-bottom: 1px solid var(--border);
+  max-width: 1320px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
 }
 
 .slider_title {
@@ -1031,7 +1023,8 @@ header.rtl {
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
   padding-bottom: 8px;
-  padding-right: clamp(18px, 5vw, 32px);
+  width: 100%;
+  max-width: 100%;
 }
 
 .slider_container::-webkit-scrollbar { display: none; }
@@ -1197,12 +1190,13 @@ header.rtl {
 .discounted_price { font-size: clamp(16px, 4vw, 19px); font-weight: 700; }
 
 /* ================================================================
-   FOOTER
+   FOOTER - FULL WIDTH
    ================================================================ */
 
 .main_footer {
   border-top: 1px solid var(--border);
   margin-top: clamp(30px, 8vw, 50px);
+  width: 100%;
 }
 
 .footer_wrapper {
@@ -1210,6 +1204,7 @@ header.rtl {
   margin: 0 auto;
   padding: clamp(20px, 5vw, 32px) clamp(18px, 4vw, 32px);
   padding-bottom: calc(clamp(20px, 5vw, 32px) + env(safe-area-inset-bottom, 0px));
+  width: 100%;
 }
 
 .footer_bottom { display: flex; align-items: center; justify-content: center; }
@@ -1221,7 +1216,7 @@ header.rtl {
 }
 
 /* ================================================================
-   HERO SECTION
+   HERO SECTION - FULL WIDTH
    ================================================================ */
 
 .hero_section {
@@ -1246,10 +1241,11 @@ header.rtl {
 .hero_content {
   position: relative;
   z-index: 2;
-  max-width: 900px;
+  max-width: 100%;
   margin: 0 auto;
   padding: clamp(60px, 12vh, 120px) clamp(20px, 5vw, 40px);
   text-align: center;
+  width: 100%;
 }
 
 .hero_badge {
@@ -1328,7 +1324,7 @@ header.rtl {
 }
 
 /* ================================================================
-   FEATURES SECTION
+   FEATURES SECTION - FULL WIDTH
    ================================================================ */
 
 .features_section {
@@ -1427,7 +1423,7 @@ header.rtl {
 }
 
 /* ================================================================
-   RESPONSIVE
+   RESPONSIVE - FULL WIDTH FIXES
    ================================================================ */
 
 @media (max-width: 480px) {
@@ -1435,6 +1431,7 @@ header.rtl {
   .hero_section { min-height: calc(100vh - 70px); }
   .feature_box { width: 100%; max-width: 320px; }
   .product_card { flex: 0 0 80vw; }
+  .slider_section { padding: 0 16px; }
 }
 
 @media (min-width: 480px) {
@@ -1466,7 +1463,20 @@ header.rtl {
   border-radius: 4px;
 }
 
-@keyframes overlayFade {
-  from { opacity: 0; }
-  to { opacity: 1; }
+/* Remove any hidden overflow that might cause boxed layout */
+#root, .app, main, [data-nextjs-scroll-focus-boundary] {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Ensure all sections take full width */
+section, div[class*="section"] {
+  width: 100%;
+}
+
+#root, .app, main, [data-nextjs-scroll-focus-boundary] {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
 }
