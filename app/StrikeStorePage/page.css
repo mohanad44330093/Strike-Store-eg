@@ -1,14 +1,7 @@
 /* ================================================================
-   STRIKE STORE — page_v2.css
-   Philosophy : 55% Simple · 40% Luxury · 5% Pro Polish
-   Approach   : Mobile-First — base styles = mobile, scale up
-   Breakpoints:
-     xs  < 380px   (small phones)
-     sm  < 480px   (phones)
-     md  < 768px   (large phones / phablets)
-     lg  < 1024px  (tablets)
-     xl  < 1280px  (small desktops)
-     2xl ≥ 1280px  (full desktop)
+   STRIKE STORE — COMPLETE STYLESHEET
+   Fixed: Cart Sidebar, Menu positioning, Full-width layout
+   Version: Final
    ================================================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&display=swap');
@@ -33,7 +26,6 @@
   --red:          #e63030;
   --red-dim:      rgba(230,48,48,0.12);
 
-  /* spacing scale */
   --sp-1:  4px;
   --sp-2:  8px;
   --sp-3:  12px;
@@ -45,31 +37,24 @@
   --sp-12: 48px;
   --sp-16: 64px;
 
-  /* radius */
   --r-sm:   6px;
   --r-md:   12px;
   --r-lg:   18px;
   --r-xl:   24px;
   --r-pill: 999px;
 
-  /* timing */
   --ease:   cubic-bezier(0.4, 0, 0.2, 1);
   --fast:   0.18s;
   --mid:    0.28s;
   --slow:   0.45s;
 
-  /* touch target minimum */
   --touch:  44px;
-
-  /* sidebar width — clamps between 300px and 420px */
-  --sidebar-w: clamp(400px);
-
-  /* card image height — shrinks on small screens */
+  --sidebar-w: min(400px, 85vw);
   --card-img-h: clamp(200px, 52vw, 320px);
 }
 
 /* ================================================================
-   RESET
+   RESET & GLOBAL
    ================================================================ */
 
 *, *::before, *::after {
@@ -79,6 +64,11 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+html, body {
+  width: 100%;
+  overflow-x: hidden;
+}
+
 html {
   background: var(--black);
   color: var(--white);
@@ -86,9 +76,12 @@ html {
   font-size: 16px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   scroll-behavior: smooth;
-  overflow-x: hidden;
+}
+
+body {
+  min-height: 100vh;
+  width: 100%;
 }
 
 button, input, textarea, select {
@@ -103,30 +96,32 @@ img {
 }
 
 /* ================================================================
-   SCROLLBAR (desktop only)
+   FULL-WIDTH LAYOUT FIX
    ================================================================ */
 
-@media (hover: hover) {
-  ::-webkit-scrollbar              { width: 5px; height: 5px; }
-  ::-webkit-scrollbar-track        { background: var(--black); }
-  ::-webkit-scrollbar-thumb        { background: #2a2a2a; border-radius: 10px; }
-  ::-webkit-scrollbar-thumb:hover  { background: #3a3a3a; }
+#__next, main, .app_container {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
 }
-
-/* ================================================================
-   CONTAINER
-   ================================================================ */
 
 .container {
   width: 100%;
-  /* mobile: 18px sides, grows to 32px on tablet+, caps at 1320px */
   padding-inline: clamp(18px, 4vw, 32px);
   margin-inline: auto;
   max-width: 1320px;
 }
 
-.container.ltr { direction: ltr; }
-.container.rtl { direction: rtl; }
+/* ================================================================
+   SCROLLBAR
+   ================================================================ */
+
+@media (hover: hover) {
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: var(--black); }
+  ::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 10px; }
+  ::-webkit-scrollbar-thumb:hover { background: #3a3a3a; }
+}
 
 /* ================================================================
    TOAST NOTIFICATION
@@ -152,7 +147,6 @@ img {
   pointer-events: none;
   transition: opacity 0.35s var(--ease), transform 0.35s var(--ease);
   box-shadow: 0 12px 48px rgba(0,0,0,0.6);
-  /* prevent overflow on tiny phones */
   max-width: calc(100vw - 36px);
   white-space: nowrap;
   overflow: hidden;
@@ -171,9 +165,8 @@ img {
   inset: 0;
   background: rgba(0,0,0,0.72);
   backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
   display: flex;
-  align-items: flex-end;        /* sheet from bottom on mobile */
+  align-items: flex-end;
   justify-content: center;
   z-index: 9000;
   padding: 0;
@@ -191,10 +184,8 @@ img {
   border: 1px solid var(--border-2);
   width: 100%;
   max-width: 420px;
-  /* rounded top corners only on mobile (bottom sheet) */
   border-radius: var(--r-xl) var(--r-xl) 0 0;
   overflow: hidden;
-  /* safe area bottom padding for iPhone notch */
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
@@ -264,11 +255,11 @@ img {
   gap: 6px;
 }
 
-.lang_option:hover   { border-color: var(--border-2); color: var(--white); }
-.lang_option.active  { background: var(--white); color: #000; border-color: var(--white); }
+.lang_option:hover { border-color: var(--border-2); color: var(--white); }
+.lang_option.active { background: var(--white); color: #000; border-color: var(--white); }
 
 /* ================================================================
-   MARKET LIST — CART SIDEBAR
+   MARKET LIST — CART SIDEBAR (FIXED: closed by default)
    ================================================================ */
 
 .market_list {
@@ -277,7 +268,7 @@ img {
   right: calc(-1 * var(--sidebar-w));
   width: var(--sidebar-w);
   height: 100%;
-  height: 100dvh; /* dynamic viewport height — handles mobile browser chrome */
+  height: 100dvh;
   background: var(--near-black);
   border-left: 1px solid var(--border);
   z-index: 8000;
@@ -285,9 +276,13 @@ img {
   flex-direction: column;
   transition: right var(--slow) var(--ease);
   overflow: hidden;
-  /* safe area for notch devices */
   padding-top: env(safe-area-inset-top, 0px);
   padding-bottom: env(safe-area-inset-bottom, 0px);
+  box-shadow: -4px 0 30px rgba(0, 0, 0, 0.5);
+}
+
+.market_list.open {
+  right: 0;
 }
 
 .market_header {
@@ -324,12 +319,11 @@ img {
 .market_products {
   flex: 1;
   overflow-y: auto;
-  overscroll-behavior: contain;  /* stop scroll leaking to page */
+  overscroll-behavior: contain;
   padding: var(--sp-5) var(--sp-5);
   display: flex;
   flex-direction: column;
   gap: 14px;
-  /* momentum scroll on iOS */
   -webkit-overflow-scrolling: touch;
 }
 
@@ -360,7 +354,7 @@ img {
 }
 
 .cart_product_image img { width: 100%; height: 100%; object-fit: cover; }
-.cart_product_info { flex: 1; min-width: 0; } /* min-width:0 lets text truncate */
+.cart_product_info { flex: 1; min-width: 0; }
 
 .cart_product_info h3 {
   font-size: 13px;
@@ -381,8 +375,8 @@ img {
 .quantity_controls { display: flex; align-items: center; gap: 10px; }
 
 .qty_btn {
-  width: var(--touch);
-  height: var(--touch);
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   border: 1px solid var(--border-2);
   background: var(--card-2);
@@ -394,10 +388,6 @@ img {
   align-items: center;
   justify-content: center;
   transition: background var(--fast) var(--ease);
-  line-height: 1;
-  /* shrink on small screens */
-  width: 32px;
-  height: 32px;
 }
 
 .qty_btn:active { transform: scale(0.92); }
@@ -424,8 +414,8 @@ img {
   transition: color var(--fast) var(--ease), background var(--fast) var(--ease);
 }
 
-.remove_btn:hover   { color: var(--red); background: var(--red-dim); }
-.remove_btn:active  { transform: scale(0.9); }
+.remove_btn:hover { color: var(--red); background: var(--red-dim); }
+.remove_btn:active { transform: scale(0.9); }
 .remove_btn .material-symbols-outlined { font-size: 20px; }
 
 .market_footer {
@@ -470,7 +460,7 @@ img {
   transition: transform var(--fast) var(--ease), box-shadow var(--fast) var(--ease);
 }
 
-.checkout_btn:hover  { transform: translateY(-2px); box-shadow: 0 10px 36px rgba(255,255,255,0.15); }
+.checkout_btn:hover { transform: translateY(-2px); box-shadow: 0 10px 36px rgba(255,255,255,0.15); }
 .checkout_btn:active { transform: scale(0.98); }
 
 .empty_cart {
@@ -485,6 +475,355 @@ img {
 
 .empty_cart .material-symbols-outlined { font-size: 48px; }
 .empty_cart p { font-size: 14px; letter-spacing: 0.05em; font-weight: 500; }
+
+/* ================================================================
+   HEADER - COMPLETE FIXED VERSION
+   ================================================================ */
+
+header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: rgba(8, 8, 8, 0.95);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  padding: clamp(12px, 3vh, 16px) clamp(18px, 4vw, 32px);
+  transition: all var(--mid) var(--ease);
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.Logo_box {
+  display: flex;
+  align-items: center;
+  gap: clamp(12px, 3vw, 20px);
+  flex-shrink: 0;
+}
+
+.List_box {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  width: clamp(40px, 8vw, 48px);
+  height: clamp(40px, 8vw, 48px);
+  cursor: pointer;
+  border-radius: var(--r-md);
+  transition: all var(--fast) var(--ease);
+  background: var(--card);
+  border: 1px solid var(--border);
+}
+
+.List_box:hover {
+  background: var(--card-2);
+  border-color: var(--border-2);
+  transform: scale(1.02);
+}
+
+.List_box div {
+  width: 22px;
+  height: 2px;
+  background: var(--white);
+  transition: all var(--mid) var(--ease);
+  border-radius: 2px;
+}
+
+.List_box.active .top_line {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+
+.List_box.active .middle_line {
+  opacity: 0;
+  transform: scaleX(0);
+}
+
+.List_box.active .end_line {
+  transform: rotate(-45deg) translate(5px, -5px);
+}
+
+.Logo {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: opacity var(--fast) var(--ease);
+}
+
+.Strike_Logo_For_Header {
+  width: clamp(120px, 25vw, 160px);
+  height: auto;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.2));
+}
+
+.Search_box {
+  flex: 1;
+  max-width: 400px;
+  min-width: 180px;
+  position: relative;
+}
+
+.Search_box input {
+  width: 100%;
+  height: clamp(42px, 8vh, 48px);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-pill);
+  padding: 0 48px 0 20px;
+  color: var(--white);
+  font-size: 14px;
+  font-weight: 500;
+  transition: all var(--fast) var(--ease);
+}
+
+.Search_box input:focus {
+  outline: none;
+  border-color: var(--border-2);
+  background: var(--card-2);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.05);
+}
+
+.Search_box input::placeholder {
+  color: var(--muted-2);
+}
+
+.Search_box .material-symbols-outlined {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  cursor: pointer;
+  transition: all var(--fast) var(--ease);
+  font-size: 20px;
+}
+
+.market_cart {
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, 2vw, 16px);
+  flex-shrink: 0;
+}
+
+.market_cart > div {
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(40px, 8vw, 48px);
+  height: clamp(40px, 8vw, 48px);
+  border-radius: 50%;
+  background: var(--card);
+  border: 1px solid var(--border);
+  transition: all var(--fast) var(--ease);
+}
+
+.market_cart > div:hover {
+  background: var(--card-2);
+  border-color: var(--border-2);
+  transform: scale(1.05);
+}
+
+.market_cart .material-symbols-outlined {
+  font-size: clamp(22px, 5vw, 24px);
+  color: var(--white);
+}
+
+.counter {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: var(--red);
+  color: var(--white);
+  font-size: 10px;
+  font-weight: 800;
+  min-width: 18px;
+  height: 18px;
+  border-radius: var(--r-pill);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+  box-shadow: 0 2px 8px rgba(230, 48, 48, 0.4);
+  animation: badgePop 0.3s var(--ease);
+}
+
+@keyframes badgePop {
+  0% { transform: scale(0); }
+  80% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+.market_cart button {
+  background: var(--card) !important;
+  border: 1px solid var(--border) !important;
+  width: clamp(40px, 8vw, 48px) !important;
+  height: clamp(40px, 8vw, 48px) !important;
+  border-radius: 50% !important;
+  padding: 0 !important;
+  transition: all var(--fast) var(--ease) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer;
+}
+
+.market_cart button:hover {
+  background: var(--card-2) !important;
+  border-color: var(--border-2) !important;
+  transform: scale(1.05) !important;
+}
+
+/* ================================================================
+   SIDE MENU (List) - FIXED POSITION (below header)
+   ================================================================ */
+
+.List {
+  position: fixed;
+  top: 80px;
+  left: -100%;
+  width: min(320px, 85vw);
+  height: calc(100vh - 80px);
+  background: rgba(15, 15, 15, 0.98);
+  backdrop-filter: blur(20px);
+  border-right: 1px solid var(--border-2);
+  transition: left var(--mid) var(--ease);
+  z-index: 999;
+  box-shadow: 4px 0 30px rgba(0, 0, 0, 0.5);
+  overflow-y: auto;
+}
+
+.List.open {
+  left: 0;
+}
+
+.List ul {
+  list-style: none;
+  margin: 0;
+  padding: clamp(20px, 5vh, 30px) 0;
+}
+
+.List li {
+  width: 100%;
+  opacity: 0;
+  transform: translateX(-20px);
+  transition: all var(--mid) var(--ease);
+}
+
+.List.open li {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.List.open li:nth-child(1) { transition-delay: 0.05s; }
+.List.open li:nth-child(2) { transition-delay: 0.1s; }
+.List.open li:nth-child(3) { transition-delay: 0.15s; }
+.List.open li:nth-child(4) { transition-delay: 0.2s; }
+
+.List .object {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 70px;
+  padding: 0 clamp(24px, 5vw, 32px);
+  color: var(--white);
+  text-decoration: none;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(18px, 4vw, 20px);
+  letter-spacing: 0.08em;
+  transition: all var(--fast) var(--ease);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  position: relative;
+}
+
+.List .object::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 3px;
+  height: 100%;
+  background: var(--red);
+  transform: scaleY(0);
+  transition: transform var(--mid) var(--ease);
+}
+
+.List .object:hover {
+  background: rgba(255, 255, 255, 0.05);
+  padding-left: calc(clamp(24px, 5vw, 32px) + 10px);
+}
+
+.List .object:hover::before {
+  transform: scaleY(1);
+}
+
+/* Menu Overlay */
+.menu_overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 998;
+  animation: overlayFade 0.3s var(--ease);
+}
+
+@keyframes overlayFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ================================================================
+   RTL SUPPORT FOR HEADER & MENU
+   ================================================================ */
+
+header.rtl {
+  direction: rtl;
+}
+
+.rtl .Logo_box {
+  flex-direction: row-reverse;
+}
+
+.rtl .Search_box .material-symbols-outlined {
+  right: auto;
+  left: 16px;
+}
+
+.rtl .Search_box input {
+  padding: 0 20px 0 48px;
+}
+
+.rtl .counter {
+  right: auto;
+  left: -6px;
+}
+
+.rtl .List {
+  left: auto;
+  right: -100%;
+  border-right: none;
+  border-left: 1px solid var(--border-2);
+}
+
+.rtl .List.open {
+  left: auto;
+  right: 0;
+}
+
+.rtl .List .object::before {
+  left: auto;
+  right: 0;
+}
+
+.rtl .List .object:hover {
+  padding-left: clamp(24px, 5vw, 32px);
+  padding-right: calc(clamp(24px, 5vw, 32px) + 10px);
+}
 
 /* ================================================================
    SMART SEARCH BAR
@@ -538,9 +877,6 @@ img {
   transition: color var(--fast) var(--ease);
 }
 
-.search_clear_btn:hover { color: var(--white); }
-.search_clear_btn .material-symbols-outlined { font-size: 18px; }
-
 .search_dropdown {
   position: absolute;
   top: calc(100% + 8px);
@@ -552,10 +888,8 @@ img {
   overflow: hidden;
   z-index: 5000;
   box-shadow: 0 20px 60px rgba(0,0,0,0.55);
-  /* max height + scroll so it doesn't go offscreen */
   max-height: clamp(280px, 50vh, 400px);
   overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
 }
 
 .search_suggestion_item {
@@ -568,12 +902,7 @@ img {
   cursor: pointer;
 }
 
-.search_suggestion_item:last-child { border-bottom: none; }
-.search_suggestion_item:active { background: var(--card-2); }
-
-@media (hover: hover) {
-  .search_suggestion_item:hover { background: var(--card-2); }
-}
+.search_suggestion_item:hover { background: var(--card-2); }
 
 .suggestion_image {
   width: 48px;
@@ -584,21 +913,19 @@ img {
   flex-shrink: 0;
 }
 
-.suggestion_image img { width: 100%; height: 100%; object-fit: cover; }
 .suggestion_info { flex: 1; min-width: 0; }
 
 .suggestion_title {
   font-size: 13px;
   font-weight: 600;
   margin-bottom: 3px;
-  line-height: 1.3;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .suggestion_price { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.suggestion_original  { font-size: 11px; color: var(--muted); text-decoration: line-through; }
+.suggestion_original { font-size: 11px; color: var(--muted); text-decoration: line-through; }
 .suggestion_discounted, .suggestion_final { font-size: 13px; font-weight: 700; }
 
 .suggestion_add_btn {
@@ -616,21 +943,7 @@ img {
   transition: all var(--fast) var(--ease);
 }
 
-.suggestion_add_btn:hover  { background: var(--white); color: #000; border-color: var(--white); }
-.suggestion_add_btn:active { transform: scale(0.92); }
-.suggestion_add_btn .material-symbols-outlined { font-size: 18px; }
-
-.search_no_results_inline {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 28px 20px;
-  color: var(--muted);
-  font-size: 13px;
-}
-
-.search_no_results_inline .material-symbols-outlined { font-size: 22px; }
+.suggestion_add_btn:hover { background: var(--white); color: #000; }
 
 /* ================================================================
    LOADING STATE
@@ -656,13 +969,6 @@ img {
 }
 
 @keyframes _spin { to { transform: rotate(360deg); } }
-
-.sliders_loading p {
-  font-size: 11px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  font-weight: 600;
-}
 
 /* ================================================================
    SLIDERS WRAPPER
@@ -692,7 +998,6 @@ img {
 
 .slider_title {
   font-family: 'Bebas Neue', sans-serif;
-  /* fluid: 28px on 320px screen → 44px at 1200px */
   font-size: clamp(28px, 5vw + 12px, 44px);
   letter-spacing: 0.06em;
   line-height: 1;
@@ -710,50 +1015,22 @@ img {
   color: var(--muted);
   border-radius: 50%;
   font-size: 20px;
-  font-weight: 300;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all var(--fast) var(--ease);
-  line-height: 1;
-  padding-bottom: 2px;
-  /* always at least touch target */
-  min-width: var(--touch);
-  min-height: var(--touch);
 }
 
-.slider_arrow:hover  { background: var(--white); color: #000; border-color: var(--white); }
-.slider_arrow:active { transform: scale(0.92); }
-
-.slider_empty {
-  padding: clamp(40px, 10vw, 60px) 0;
-  text-align: center;
-  color: var(--muted-2);
-  font-size: 12px;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  font-weight: 600;
-  border: 1px dashed var(--border);
-  border-radius: var(--r-md);
-}
-
-/* ================================================================
-   SLIDER CONTAINER — horizontal scroll
-   ================================================================ */
+.slider_arrow:hover { background: var(--white); color: #000; }
 
 .slider_container {
   display: flex;
   gap: clamp(12px, 3vw, 18px);
   overflow-x: auto;
   scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior-x: contain;
   scrollbar-width: none;
-  -ms-overflow-style: none;
-  /* padding so box-shadow / focus ring isn't clipped */
   padding-bottom: 8px;
-  /* peek next card on mobile */
   padding-right: clamp(18px, 5vw, 32px);
 }
 
@@ -764,29 +1041,19 @@ img {
    ================================================================ */
 
 .product_card {
-  /* fluid card width: 74vw on phone → 260px on desktop */
   flex: 0 0 clamp(200px, 74vw, 265px);
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--r-lg);
   overflow: hidden;
   scroll-snap-align: start;
-  position: relative;
-  /* GPU-promoted layer for smooth scroll perf */
-  will-change: transform;
   transition: border-color var(--mid) var(--ease), transform var(--mid) var(--ease);
 }
 
-@media (hover: hover) {
-  .product_card:hover {
-    border-color: var(--border-2);
-    transform: translateY(-4px);
-  }
+.product_card:hover {
+  border-color: var(--border-2);
+  transform: translateY(-4px);
 }
-
-/* ================================================================
-   CARD IMAGE AREA
-   ================================================================ */
 
 .card_image_area {
   position: relative;
@@ -795,24 +1062,11 @@ img {
   background: var(--card-2);
 }
 
-/* ================================================================
-   PRODUCT IMAGE SLIDER (inside card)
-   ================================================================ */
-
 .product_image_wrapper {
   position: relative;
   width: 100%;
   height: 100%;
 }
-
-.product_image_wrapper.no_image {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--muted-2);
-}
-
-.product_image_wrapper.no_image .material-symbols-outlined { font-size: 36px; }
 
 .product_image {
   position: absolute;
@@ -836,7 +1090,6 @@ img {
   background: rgba(0,0,0,0.55);
   border: 1px solid var(--border-2);
   color: var(--white);
-  /* touch-friendly */
   width: var(--touch);
   height: var(--touch);
   border-radius: 50%;
@@ -846,13 +1099,10 @@ img {
   align-items: center;
   justify-content: center;
   z-index: 10;
-  transition: background var(--fast) var(--ease);
-  line-height: 1;
 }
 
-.slide_arrow:active { transform: translateY(-50%) scale(0.9); }
-.slide_arrow_left   { left: 8px; }
-.slide_arrow_right  { right: 8px; }
+.slide_arrow_left { left: 8px; }
+.slide_arrow_right { right: 8px; }
 
 .slide_dots {
   position: absolute;
@@ -868,25 +1118,11 @@ img {
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  border: none;
   background: rgba(255,255,255,0.3);
   cursor: pointer;
-  padding: 0;
-  /* expand touch area without changing visual size */
-  position: relative;
-}
-
-.slide_dot::before {
-  content: '';
-  position: absolute;
-  inset: -6px;
 }
 
 .slide_dot_active { background: var(--white); transform: scale(1.35); }
-
-/* ================================================================
-   DISCOUNT BADGE
-   ================================================================ */
 
 .discount_badge {
   position: absolute;
@@ -896,16 +1132,9 @@ img {
   color: var(--white);
   font-size: 10px;
   font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
   padding: 3px 9px;
-  border-radius: 0;
   z-index: 20;
 }
-
-/* ================================================================
-   PRODUCT OVERLAY — hover / tap CTA
-   ================================================================ */
 
 .product_overlay {
   position: absolute;
@@ -916,25 +1145,11 @@ img {
   justify-content: center;
   padding-bottom: 16px;
   z-index: 15;
-  /* desktop: fade on hover */
   opacity: 0;
   transition: opacity var(--mid) var(--ease);
 }
 
-/* on desktop show overlay on card hover */
-@media (hover: hover) {
-  .card_image_area:hover .product_overlay { opacity: 1; }
-  .card_image_area:hover .add_to_cart_btn { transform: translateY(0); }
-}
-
-/* on touch devices always show overlay */
-@media (hover: none) {
-  .product_overlay {
-    opacity: 1;
-    background: linear-gradient(to top, rgba(0,0,0,0.72) 0%, transparent 60%);
-  }
-  .add_to_cart_btn { transform: translateY(0) !important; }
-}
+.card_image_area:hover .product_overlay { opacity: 1; }
 
 .add_to_cart_btn {
   display: flex;
@@ -949,32 +1164,19 @@ img {
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.12em;
-  text-transform: uppercase;
   cursor: pointer;
   transform: translateY(10px);
-  transition: transform var(--mid) var(--ease), box-shadow var(--fast) var(--ease);
-  /* ensure minimum touch area */
-  min-width: var(--touch);
+  transition: transform var(--mid) var(--ease);
 }
 
-.add_to_cart_btn:active        { transform: scale(0.96); }
-.add_to_cart_btn:hover         { box-shadow: 0 8px 24px rgba(255,255,255,0.2); }
-.add_to_cart_btn .material-symbols-outlined { font-size: 17px; }
+.card_image_area:hover .add_to_cart_btn { transform: translateY(0); }
 
-/* ================================================================
-   PRODUCT INFO
-   ================================================================ */
-
-.product_info {
-  padding: clamp(14px, 3vw, 18px);
-}
+.product_info { padding: clamp(14px, 3vw, 18px); }
 
 .product_title {
   font-size: clamp(13px, 3vw, 15px);
   font-weight: 700;
-  letter-spacing: 0.02em;
   margin-bottom: 5px;
-  line-height: 1.3;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -983,7 +1185,6 @@ img {
 .product_description {
   font-size: clamp(12px, 2.5vw, 13px);
   color: var(--muted);
-  line-height: 1.5;
   margin-bottom: 12px;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -991,25 +1192,9 @@ img {
   overflow: hidden;
 }
 
-.product_price_section { display: flex; align-items: center; }
-.price_container { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-
-.original_price {
-  font-size: 12px;
-  color: var(--muted);
-  text-decoration: line-through;
-  font-weight: 500;
-}
-
-.discounted_price {
-  font-size: clamp(16px, 4vw, 19px);
-  font-weight: 700;
-}
-
-.product_price {
-  font-size: clamp(16px, 4vw, 19px);
-  font-weight: 700;
-}
+.price_container { display: flex; align-items: center; gap: 8px; }
+.original_price { font-size: 12px; color: var(--muted); text-decoration: line-through; }
+.discounted_price { font-size: clamp(16px, 4vw, 19px); font-weight: 700; }
 
 /* ================================================================
    FOOTER
@@ -1024,16 +1209,10 @@ img {
   max-width: 1320px;
   margin: 0 auto;
   padding: clamp(20px, 5vw, 32px) clamp(18px, 4vw, 32px);
-  /* extra bottom padding for iPhone home indicator */
   padding-bottom: calc(clamp(20px, 5vw, 32px) + env(safe-area-inset-bottom, 0px));
 }
 
-.footer_bottom {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
+.footer_bottom { display: flex; align-items: center; justify-content: center; }
 .footer_copyright {
   font-family: 'Bebas Neue', sans-serif;
   font-size: clamp(16px, 4vw, 20px);
@@ -1042,62 +1221,111 @@ img {
 }
 
 /* ================================================================
-   RESPONSIVE FINE-TUNING
-   (base = mobile — these only refine up)
+   HERO SECTION
    ================================================================ */
 
-/* ── Large phones ─────────────────────────── 480px+ */
-@media (min-width: 480px) {
-  .product_card  { flex: 0 0 clamp(220px, 48vw, 265px); }
-  .slider_title  { font-size: clamp(32px, 4vw, 44px); }
+.hero_section {
+  position: relative;
+  min-height: calc(100vh - 80px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--black);
+  overflow: hidden;
+  width: 100%;
 }
 
-/* ── Tablets / phablets ───────────────────── 768px+ */
-@media (min-width: 768px) {
-  .slider_container { padding-right: clamp(18px, 4vw, 32px); }
-  .product_card     { flex: 0 0 clamp(240px, 32vw, 275px); }
-
-  /* show arrows on desktop, they're redundant on touch (swipe works) */
-  .slider_controls { display: flex; }
+.hero_section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 30% 40%, rgba(230,48,48,0.08) 0%, transparent 60%);
+  z-index: 0;
 }
 
-/* ── Small desktops ───────────────────────── 1024px+ */
-@media (min-width: 1024px) {
-  .product_card { flex: 0 0 clamp(260px, 22vw, 290px); }
+.hero_content {
+  position: relative;
+  z-index: 2;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: clamp(60px, 12vh, 120px) clamp(20px, 5vw, 40px);
+  text-align: center;
 }
 
-/* ── Safety: very small phones ────────────── < 360px */
-@media (max-width: 360px) {
-  .product_card { flex: 0 0 80vw; }
-  .slider_title { font-size: 26px; }
-  .market_list  { width: 100%; right: -100%; }
+.hero_badge {
+  display: inline-block;
+  font-size: clamp(11px, 2.5vw, 13px);
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--red);
+  background: var(--red-dim);
+  padding: 6px 16px;
+  border-radius: var(--r-pill);
+  margin-bottom: clamp(20px, 5vh, 40px);
+  border: 1px solid rgba(230,48,48,0.2);
 }
 
-/* ================================================================
-   ACCESSIBILITY — reduced motion
-   ================================================================ */
-
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
-  }
+.Strike_Logo_for_hero_section {
+  width: clamp(200px, 60vw, 405px);
+  height: auto;
+  margin-bottom: clamp(20px, 5vh, 32px);
+  filter: drop-shadow(0 4px 20px rgba(0,0,0,0.3));
 }
 
-/* ================================================================
-   FOCUS VISIBLE — keyboard nav
-   ================================================================ */
-
-:focus-visible {
-  outline: 2px solid var(--white);
-  outline-offset: 3px;
-  border-radius: 4px;
+.hero_description {
+  font-size: clamp(15px, 3.5vw, 18px);
+  line-height: 1.6;
+  color: var(--muted);
+  max-width: 700px;
+  margin: 0 auto clamp(32px, 6vh, 48px) auto;
 }
 
-/* ================================================================
-   FEATURE SECTION - STRIKE STORE STYLE
-   Fully integrated with the existing design system
-   ================================================================ */
+.hero_buttons {
+  display: flex;
+  gap: clamp(16px, 4vw, 24px);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.shop_btn {
+  background: var(--white);
+  color: #000;
+  border: none;
+  padding: 0 clamp(28px, 5vw, 40px);
+  height: clamp(48px, 10vh, 56px);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(14px, 3vw, 16px);
+  letter-spacing: 0.12em;
+  border-radius: var(--r-pill);
+  cursor: pointer;
+  transition: all var(--mid) var(--ease);
+}
+
+.shop_btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(255,255,255,0.2);
+}
+
+.learn_btn {
+  background: transparent;
+  color: var(--white);
+  border: 1.5px solid var(--border-2);
+  padding: 0 clamp(28px, 5vw, 40px);
+  height: clamp(48px, 10vh, 56px);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(14px, 3vw, 16px);
+  letter-spacing: 0.12em;
+  border-radius: var(--r-pill);
+  cursor: pointer;
+  transition: all var(--mid) var(--ease);
+}
+
+.learn_btn:hover {
+  color: #000;
+  border-color: var(--white);
+  background: var(--white);
+}
 
 /* ================================================================
    FEATURES SECTION
@@ -1111,37 +1339,8 @@ img {
   background: var(--near-black);
   flex-wrap: wrap;
   position: relative;
-  overflow: hidden;
+  width: 100%;
 }
-
-/* Subtle background decoration matching the brand */
-.features_section::before {
-  content: '';
-  position: absolute;
-  width: 500px;
-  height: 500px;
-  background: radial-gradient(circle, rgba(230,48,48,0.03) 0%, rgba(230,48,48,0) 70%);
-  border-radius: 50%;
-  top: -250px;
-  right: -100px;
-  pointer-events: none;
-}
-
-.features_section::after {
-  content: '';
-  position: absolute;
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(circle, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0) 70%);
-  border-radius: 50%;
-  bottom: -300px;
-  left: -150px;
-  pointer-events: none;
-}
-
-/* ================================================================
-   FEATURE BOX CARD
-   ================================================================ */
 
 .feature_box {
   background: var(--card);
@@ -1152,9 +1351,6 @@ img {
   text-align: center;
   transition: all var(--mid) var(--ease);
   position: relative;
-  z-index: 1;
-  cursor: pointer;
-  backdrop-filter: blur(0px);
 }
 
 .feature_box:hover {
@@ -1162,7 +1358,6 @@ img {
   transform: translateY(-6px);
 }
 
-/* Red accent line on hover matching the brand */
 .feature_box::before {
   content: '';
   position: absolute;
@@ -1173,16 +1368,11 @@ img {
   height: 3px;
   background: var(--red);
   transition: width var(--mid) var(--ease);
-  border-radius: 0 0 3px 3px;
 }
 
 .feature_box:hover::before {
   width: 60px;
 }
-
-/* ================================================================
-   ICON STYLING
-   ================================================================ */
 
 .feature_box .material-symbols-outlined {
   font-size: clamp(48px, 8vw, 64px);
@@ -1202,1474 +1392,81 @@ img {
   transform: scale(1.05);
 }
 
-/* ================================================================
-   TYPOGRAPHY
-   ================================================================ */
-
 .feature_box h2 {
   font-family: 'Bebas Neue', sans-serif;
   font-size: clamp(22px, 5vw, 28px);
   letter-spacing: 0.06em;
   margin: var(--sp-3) 0 var(--sp-2);
   color: var(--white);
-  font-weight: 400;
-  line-height: 1.2;
-  position: relative;
-  display: inline-block;
 }
 
 .feature_box p {
-  font-family: 'Barlow', sans-serif;
   font-size: clamp(13px, 3vw, 14px);
   color: var(--muted);
   line-height: 1.6;
   margin-top: var(--sp-3);
-  font-weight: 400;
 }
 
 /* ================================================================
-   RTL SUPPORT
+   RTL SECTION SUPPORT
    ================================================================ */
 
-.features_section.rtl {
-  direction: rtl;
-}
-
-.features_section.ltr {
-  direction: ltr;
-}
-
-.rtl .feature_box h2 {
-  font-family: 'Bebas Neue', 'Tajawal', sans-serif;
-  letter-spacing: 0.04em;
-}
-
-.rtl .feature_box p {
-  text-align: right;
-  font-family: 'Barlow', 'Tajawal', sans-serif;
-}
-
-.ltr .feature_box h2 {
-  font-family: 'Bebas Neue', sans-serif;
-}
-
-.ltr .feature_box p {
-  text-align: left;
-  font-family: 'Barlow', sans-serif;
-}
-
-/* Red accent line positioning for RTL */
-.rtl .feature_box::before {
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-/* ================================================================
-   RESPONSIVE DESIGN
-   Mobile-First — scales up beautifully
-   ================================================================ */
-
-/* Small phones (320px - 480px) */
-@media (max-width: 480px) {
-  .features_section {
-    gap: 20px;
-    padding: 40px 16px;
-  }
-  
-  .feature_box {
-    width: 100%;
-    max-width: 320px;
-    padding: 24px 20px;
-  }
-  
-  .feature_box .material-symbols-outlined {
-    font-size: 48px;
-    margin-bottom: 12px;
-  }
-  
-  .feature_box h2 {
-    font-size: 24px;
-    margin: 8px 0 6px;
-  }
-  
-  .feature_box p {
-    font-size: 13px;
-  }
-}
-
-/* Tablets (768px - 1024px) */
-@media (min-width: 768px) and (max-width: 1023px) {
-  .features_section {
-    gap: 24px;
-    padding: 60px 32px;
-  }
-  
-  .feature_box {
-    width: 280px;
-    padding: 28px 24px;
-  }
-  
-  .feature_box .material-symbols-outlined {
-    font-size: 56px;
-  }
-  
-  .feature_box h2 {
-    font-size: 26px;
-  }
-}
-
-/* Desktop (1024px+) */
-@media (min-width: 1024px) {
-  .features_section {
-    gap: 32px;
-    padding: 80px 32px;
-  }
-  
-  .feature_box {
-    width: 320px;
-    padding: 36px 28px;
-  }
-  
-  .feature_box .material-symbols-outlined {
-    font-size: 64px;
-    margin-bottom: 20px;
-  }
-  
-  .feature_box h2 {
-    font-size: 28px;
-    margin: 12px 0 8px;
-  }
-  
-  .feature_box p {
-    font-size: 14px;
-    margin-top: 16px;
-  }
-}
-
-/* Large Desktop (1280px+) */
-@media (min-width: 1280px) {
-  .features_section {
-    gap: 40px;
-  }
-  
-  .feature_box {
-    width: 340px;
-  }
-}
-
-/* ================================================================
-   ANIMATIONS
-   Smooth entrance animations
-   ================================================================ */
-
-@keyframes featureFadeUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.feature_box {
-  animation: featureFadeUp 0.6s var(--ease) forwards;
-  opacity: 0;
-}
-
-.feature_box:nth-child(1) {
-  animation-delay: 0.1s;
-}
-
-.feature_box:nth-child(2) {
-  animation-delay: 0.25s;
-}
-
-.feature_box:nth-child(3) {
-  animation-delay: 0.4s;
-}
-
-/* Reduced motion support */
-@media (prefers-reduced-motion: reduce) {
-  .feature_box {
-    animation: none;
-    opacity: 1;
-  }
-  
-  .feature_box:hover {
-    transform: translateY(-3px);
-  }
-  
-  .feature_box:hover::before {
-    width: 50px;
-  }
-}
-
-/* ================================================================
-   TOUCH OPTIMIZATION
-   Better tap targets on mobile
-   ================================================================ */
-
-@media (hover: none) and (pointer: coarse) {
-  .feature_box {
-    cursor: default;
-    transform: none !important;
-  }
-  
-  .feature_box:active {
-    background: var(--card-2);
-    transform: scale(0.98) !important;
-  }
-  
-  .feature_box .material-symbols-outlined {
-    transition: transform 0.1s ease;
-  }
-  
-  .feature_box:active .material-symbols-outlined {
-    transform: scale(0.95);
-  }
-}
-
-/* ================================================================
-   FOCUS STATES FOR ACCESSIBILITY
-   ================================================================ */
-
-.feature_box:focus-visible {
-  outline: 2px solid var(--red);
-  outline-offset: 4px;
-  border-radius: var(--r-xl);
-  transform: translateY(-2px);
-}
-
-/* ================================================================
-   SPECIAL HOVER EFFECTS (desktop only)
-   ================================================================ */
-
-@media (hover: hover) {
-  .feature_box:hover p {
-    color: var(--white);
-    transition: color var(--fast) var(--ease);
-  }
-  
-  .feature_box {
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-  }
-  
-  .feature_box:hover {
-    box-shadow: 0 8px 32px rgba(230, 48, 48, 0.12);
-  }
-}
-
-/* ================================================================
-   HERO SECTION - STRIKE STORE STYLE
-   Fully integrated with the existing design system
-   ================================================================ */
-
-/* ================================================================
-   HERO SECTION BASE
-   ================================================================ */
-
-.hero_section {
-  position: relative;
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--black);
-  overflow: hidden;
-  isolation: isolate;
-}
-
-/* Animated gradient background */
-.hero_section::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(ellipse at 30% 40%, rgba(230,48,48,0.08) 0%, transparent 60%),
-              radial-gradient(ellipse at 80% 70%, rgba(255,255,255,0.03) 0%, transparent 50%);
-  z-index: 0;
-  pointer-events: none;
-}
-
-/* Animated grid pattern */
-.hero_section::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: 
-    linear-gradient(var(--border) 1px, transparent 1px),
-    linear-gradient(90deg, var(--border) 1px, transparent 1px);
-  background-size: 50px 50px;
-  mask-image: radial-gradient(circle at center, black 30%, transparent 80%);
-  -webkit-mask-image: radial-gradient(circle at center, black 30%, transparent 80%);
-  opacity: 0.3;
-  pointer-events: none;
-  z-index: 0;
-}
-
-/* ================================================================
-   HERO CONTENT
-   ================================================================ */
-
-.hero_content {
-  position: relative;
-  z-index: 2;
-  max-width: 900px;
-  margin: 0 auto;
-  padding: clamp(60px, 12vh, 120px) clamp(20px, 5vw, 40px);
-  text-align: center;
-  animation: heroFadeIn 0.8s var(--ease) forwards;
-}
-
-/* ================================================================
-   HERO BADGE
-   ================================================================ */
-
-.hero_badge {
-  display: inline-block;
-  font-family: 'Barlow', sans-serif;
-  font-size: clamp(11px, 2.5vw, 13px);
-  font-weight: 700;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--red);
-  background: var(--red-dim);
-  padding: 6px 16px;
-  border-radius: var(--r-pill);
-  margin-bottom: clamp(20px, 5vh, 40px);
-  border: 1px solid rgba(230,48,48,0.2);
-  backdrop-filter: blur(4px);
-  animation: heroSlideUp 0.6s var(--ease) forwards;
-  opacity: 0;
-  transform: translateY(20px);
-}
-
-/* ================================================================
-   LOGO STYLING
-   ================================================================ */
-
-.Strike_Logo_for_hero_section {
-  width: clamp(200px, 60vw, 405px);
-  height: auto;
-  margin-bottom: clamp(20px, 5vh, 32px);
-  animation: heroSlideUp 0.6s var(--ease) 0.1s forwards;
-  opacity: 0;
-  transform: translateY(20px);
-  filter: drop-shadow(0 4px 20px rgba(0,0,0,0.3));
-}
-
-/* ================================================================
-   HERO DESCRIPTION
-   ================================================================ */
-
-.hero_description {
-  font-family: 'Barlow', sans-serif;
-  font-size: clamp(15px, 3.5vw, 18px);
-  line-height: 1.6;
-  color: var(--muted);
-  max-width: 700px;
-  margin: 0 auto clamp(32px, 6vh, 48px) auto;
-  font-weight: 400;
-  letter-spacing: 0.02em;
-  animation: heroSlideUp 0.6s var(--ease) 0.2s forwards;
-  opacity: 0;
-  transform: translateY(20px);
-}
-
-/* ================================================================
-   BUTTONS CONTAINER
-   ================================================================ */
-
-.hero_buttons {
-  display: flex;
-  gap: clamp(16px, 4vw, 24px);
-  justify-content: center;
-  flex-wrap: wrap;
-  animation: heroSlideUp 0.6s var(--ease) 0.3s forwards;
-  opacity: 0;
-  transform: translateY(20px);
-}
-
-/* ================================================================
-   SHOP BUTTON (Primary)
-   ================================================================ */
-
-.shop_btn {
-  background: var(--white);
-  color: #000;
-  border: none;
-  padding: 0 clamp(28px, 5vw, 40px);
-  height: clamp(48px, 10vh, 56px);
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: clamp(14px, 3vw, 16px);
-  font-weight: 400;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  border-radius: var(--r-pill);
-  cursor: pointer;
-  transition: all var(--mid) var(--ease);
-  position: relative;
-  overflow: hidden;
-  z-index: 1;
-}
-
-.shop_btn::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  background: rgba(0,0,0,0.05);
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  transition: width 0.4s, height 0.4s;
-  z-index: -1;
-}
-
-.shop_btn:hover::before {
-  width: 300px;
-  height: 300px;
-}
-
-.shop_btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 28px rgba(255,255,255,0.2);
-}
-
-.shop_btn:active {
-  transform: translateY(1px);
-}
-
-/* ================================================================
-   LEARN BUTTON (Secondary)
-   ================================================================ */
-
-.learn_btn {
-  background: transparent;
-  color: var(--white);
-  border: 1.5px solid var(--border-2);
-  padding: 0 clamp(28px, 5vw, 40px);
-  height: clamp(48px, 10vh, 56px);
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: clamp(14px, 3vw, 16px);
-  font-weight: 400;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  border-radius: var(--r-pill);
-  cursor: pointer;
-  transition: all var(--mid) var(--ease);
-  position: relative;
-  overflow: hidden;
-  backdrop-filter: blur(4px);
-}
-
-.learn_btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 0;
-  height: 100%;
-  background: var(--white);
-  transition: width var(--mid) var(--ease);
-  z-index: -1;
-}
-
-.learn_btn:hover {
-  color: #000;
-  border-color: var(--white);
-}
-
-.learn_btn:hover::before {
-  width: 100%;
-}
-
-.learn_btn:active {
-  transform: scale(0.98);
-}
-
-/* ================================================================
-   ANIMATIONS
-   ================================================================ */
-
-@keyframes heroFadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes heroSlideUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* ================================================================
-   RTL SUPPORT
-   ================================================================ */
-
-.hero_section.rtl {
-  direction: rtl;
-}
-
-.hero_section.ltr {
-  direction: ltr;
+.rtl .slider_title {
+  padding-left: 0;
+  padding-right: 14px;
+  border-left: none;
+  border-right: 3px solid var(--red);
 }
 
 .rtl .hero_badge {
   letter-spacing: 0.1em;
-  font-family: 'Barlow', 'Tajawal', sans-serif;
 }
 
-.rtl .hero_description {
-  text-align: center;
-  font-family: 'Barlow', 'Tajawal', sans-serif;
-}
-
-.ltr .hero_badge {
-  font-family: 'Barlow', sans-serif;
-}
-
-.ltr .hero_description {
-  text-align: center;
-  font-family: 'Barlow', sans-serif;
+.rtl .feature_box p {
+  text-align: right;
 }
 
 /* ================================================================
-   RESPONSIVE DESIGN
+   RESPONSIVE
    ================================================================ */
 
-/* Small phones (320px - 480px) */
 @media (max-width: 480px) {
-  .hero_content {
-    padding: 80px 20px;
-  }
-  
-  .hero_badge {
-    padding: 4px 12px;
-    font-size: 10px;
-    margin-bottom: 24px;
-  }
-  
-  .Strike_Logo_for_hero_section {
-    margin-bottom: 20px;
-  }
-  
-  .hero_description {
-    font-size: 14px;
-    line-height: 1.5;
-    margin-bottom: 32px;
-    padding: 0 8px;
-  }
-  
-  .hero_buttons {
-    gap: 14px;
-  }
-  
-  .shop_btn, .learn_btn {
-    height: 48px;
-    padding: 0 24px;
-    font-size: 13px;
-  }
+  .List { top: 70px; height: calc(100vh - 70px); }
+  .hero_section { min-height: calc(100vh - 70px); }
+  .feature_box { width: 100%; max-width: 320px; }
+  .product_card { flex: 0 0 80vw; }
 }
 
-/* Medium devices (481px - 768px) */
-@media (min-width: 481px) and (max-width: 768px) {
-  .hero_content {
-    padding: 100px 32px;
-  }
-  
-  .hero_badge {
-    padding: 6px 14px;
-    font-size: 11px;
-    margin-bottom: 28px;
-  }
-  
-  .hero_description {
-    font-size: 16px;
-    margin-bottom: 36px;
-  }
-  
-  .shop_btn, .learn_btn {
-    height: 52px;
-    padding: 0 32px;
-    font-size: 14px;
-  }
+@media (min-width: 480px) {
+  .product_card { flex: 0 0 clamp(220px, 48vw, 265px); }
 }
 
-/* Tablets (769px - 1024px) */
-@media (min-width: 769px) and (max-width: 1024px) {
-  .hero_content {
-    padding: 120px 40px;
-  }
-  
-  .hero_badge {
-    margin-bottom: 32px;
-  }
-  
-  .hero_description {
-    font-size: 17px;
-    margin-bottom: 40px;
-  }
-  
-  .shop_btn, .learn_btn {
-    height: 54px;
-  }
+@media (min-width: 768px) {
+  .product_card { flex: 0 0 clamp(240px, 32vw, 275px); }
 }
 
-/* Desktop (1025px+) */
-@media (min-width: 1025px) {
-  .hero_content {
-    padding: 140px 40px;
-  }
-  
-  .hero_description {
-    font-size: 18px;
-  }
-  
-  .shop_btn, .learn_btn {
-    height: 56px;
-  }
-  
-  .shop_btn:hover {
-    transform: translateY(-3px);
-  }
-}
-
-/* Large Desktop (1440px+) */
-@media (min-width: 1440px) {
-  .hero_content {
-    max-width: 1000px;
-  }
-  
-  .hero_description {
-    font-size: 19px;
-    max-width: 750px;
-  }
+@media (min-width: 1024px) {
+  .product_card { flex: 0 0 clamp(260px, 22vw, 290px); }
 }
 
 /* ================================================================
-   EXTRA POLISH - Desktop Only Effects
-   ================================================================ */
-
-@media (hover: hover) and (min-width: 1025px) {
-  /* Subtle parallax effect on mouse move (optional) */
-  .hero_section {
-    transition: background-position 0.2s ease;
-  }
-  
-  /* Glow effect on button hover */
-  .shop_btn:hover {
-    box-shadow: 0 0 20px rgba(255,255,255,0.3);
-  }
-  
-  .learn_btn:hover {
-    box-shadow: 0 0 20px rgba(255,255,255,0.15);
-  }
-}
-
-/* ================================================================
-   TOUCH OPTIMIZATION
-   ================================================================ */
-
-@media (hover: none) and (pointer: coarse) {
-  .shop_btn:active {
-    transform: scale(0.96);
-    background: var(--muted);
-  }
-  
-  .learn_btn:active {
-    transform: scale(0.96);
-    background: rgba(255,255,255,0.1);
-  }
-  
-  .shop_btn, .learn_btn {
-    transition: transform 0.1s ease;
-  }
-}
-
-/* ================================================================
-   ACCESSIBILITY - Reduced Motion
+   ACCESSIBILITY
    ================================================================ */
 
 @media (prefers-reduced-motion: reduce) {
-  .hero_content,
-  .hero_badge,
-  .Strike_Logo_for_hero_section,
-  .hero_description,
-  .hero_buttons {
-    animation: none;
-    opacity: 1;
-    transform: none;
-  }
-  
-  .shop_btn,
-  .learn_btn {
-    transition: none;
-  }
-  
-  .shop_btn:hover,
-  .learn_btn:hover {
-    transform: none;
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
   }
 }
 
-/* ================================================================
-   FOCUS VISIBLE - Keyboard Navigation
-   ================================================================ */
-
-.shop_btn:focus-visible,
-.learn_btn:focus-visible {
+:focus-visible {
   outline: 2px solid var(--red);
-  outline-offset: 4px;
-  transform: scale(1.02);
-}
-
-.hero_section:focus-within {
-  outline: none;
-}
-
-/* ================================================================
-   LOADING STATE (Optional)
-   ================================================================ */
-
-.hero_section.loading .hero_content {
-  opacity: 0;
-}
-
-/* ================================================================
-   BACKGROUND ANIMATION (Subtle)
-   ================================================================ */
-
-@keyframes slowDrift {
-  0% {
-    transform: translate(0, 0);
-  }
-  100% {
-    transform: translate(20px, 20px);
-  }
-}
-
-.hero_section::before {
-  animation: slowDrift 20s ease-in-out infinite alternate;
-}
-
-/* ================================================================
-   DIVIDER / SCROLL INDICATOR (Optional Enhancement)
-   ================================================================ */
-
-.hero_section {
-  position: relative;
-}
-
-/* Subtle bottom gradient transition to next section */
-.hero_section::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 100px;
-  background: linear-gradient(to bottom, transparent, var(--black));
-  pointer-events: none;
-  z-index: 1;
-  opacity: 0.5;
-}
-
-/* ================================================================
-   HEADER SECTION - STRIKE STORE STYLE
-   Fully integrated with the existing design system
-   ================================================================ */
-
-/* ================================================================
-   HEADER BASE
-   ================================================================ */
-
-header {
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  background: rgba(8, 8, 8, 0.92);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border);
-  padding: clamp(12px, 3vh, 16px) clamp(18px, 4vw, 32px);
-  transition: all var(--mid) var(--ease);
-}
-
-header.scrolled {
-  background: rgba(8, 8, 8, 0.96);
-  backdrop-filter: blur(24px);
-  padding-block: clamp(10px, 2vh, 12px);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-}
-
-/* ================================================================
-   LOGO BOX (Left Section)
-   ================================================================ */
-
-.Logo_box {
-  display: flex;
-  align-items: center;
-  gap: clamp(12px, 3vw, 20px);
-  flex-shrink: 0;
-}
-
-/* Hamburger Menu Button */
-.List_box {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 6px;
-  width: clamp(40px, 8vw, 48px);
-  height: clamp(40px, 8vw, 48px);
-  cursor: pointer;
-  position: relative;
-  border-radius: var(--r-md);
-  transition: all var(--fast) var(--ease);
-  background: var(--card);
-  border: 1px solid var(--border);
-}
-
-.List_box:hover {
-  background: var(--card-2);
-  border-color: var(--border-2);
-  transform: scale(1.02);
-}
-
-.List_box:active {
-  transform: scale(0.98);
-}
-
-.List_box div {
-  width: 22px;
-  height: 2px;
-  background: var(--white);
-  transition: all var(--mid) var(--ease);
-  border-radius: 2px;
-}
-
-/* Animated hamburger to X */
-.List_box.active .top_line {
-  transform: rotate(45deg) translate(5px, 5px);
-}
-
-.List_box.active .middle_line {
-  opacity: 0;
-  transform: scaleX(0);
-}
-
-.List_box.active .end_line {
-  transform: rotate(-45deg) translate(5px, -5px);
-}
-
-/* Logo */
-.Logo {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  transition: opacity var(--fast) var(--ease);
-}
-
-.Logo:hover {
-  opacity: 0.85;
-}
-
-.Logo:active {
-  transform: scale(0.98);
-}
-
-.Strike_Logo_For_Header {
-  width: clamp(120px, 25vw, 160px);
-  height: auto;
-  display: block;
-  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.2));
-}
-
-/* ================================================================
-   SEARCH BOX (Center Section)
-   ================================================================ */
-
-.Search_box {
-  flex: 1;
-  max-width: 400px;
-  min-width: 180px;
-  position: relative;
-}
-
-.Search_box input {
-  width: 100%;
-  height: clamp(42px, 8vh, 48px);
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--r-pill);
-  padding: 0 48px 0 20px;
-  color: var(--white);
-  font-size: 14px;
-  font-weight: 500;
-  transition: all var(--fast) var(--ease);
-  font-family: 'Barlow', sans-serif;
-}
-
-.Search_box input:focus {
-  outline: none;
-  border-color: var(--border-2);
-  background: var(--card-2);
-  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.05);
-}
-
-.Search_box input::placeholder {
-  color: var(--muted-2);
-  font-weight: 400;
-}
-
-.Search_box .material-symbols-outlined {
-  position: absolute;
-  right: 16px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--muted);
-  cursor: pointer;
-  transition: all var(--fast) var(--ease);
-  font-size: 20px;
-}
-
-.Search_box .material-symbols-outlined:hover {
-  color: var(--white);
-  transform: translateY(-50%) scale(1.05);
-}
-
-/* ================================================================
-   MARKET CART (Right Section)
-   ================================================================ */
-
-.market_cart {
-  display: flex;
-  align-items: center;
-  gap: clamp(8px, 2vw, 16px);
-  flex-shrink: 0;
-}
-
-.market_cart > div {
-  position: relative;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: clamp(40px, 8vw, 48px);
-  height: clamp(40px, 8vw, 48px);
-  border-radius: 50%;
-  background: var(--card);
-  border: 1px solid var(--border);
-  transition: all var(--fast) var(--ease);
-}
-
-.market_cart > div:hover {
-  background: var(--card-2);
-  border-color: var(--border-2);
-  transform: scale(1.05);
-}
-
-.market_cart > div:active {
-  transform: scale(0.95);
-}
-
-.market_cart .material-symbols-outlined {
-  font-size: clamp(22px, 5vw, 24px);
-  color: var(--white);
-  transition: color var(--fast) var(--ease);
-}
-
-.market_cart > div:hover .material-symbols-outlined {
-  color: var(--red);
-}
-
-/* Cart Counter Badge */
-.counter {
-  position: absolute;
-  top: -6px;
-  right: -6px;
-  background: var(--red);
-  color: var(--white);
-  font-size: 10px;
-  font-weight: 800;
-  font-family: 'Barlow', sans-serif;
-  min-width: 18px;
-  height: 18px;
-  border-radius: var(--r-pill);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 5px;
-  letter-spacing: 0;
-  box-shadow: 0 2px 8px rgba(230, 48, 48, 0.4);
-  animation: badgePop 0.3s var(--ease);
-}
-
-@keyframes badgePop {
-  0% {
-    transform: scale(0);
-  }
-  80% {
-    transform: scale(1.2);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
-/* Settings Button */
-.market_cart button {
-  background: var(--card) !important;
-  border: 1px solid var(--border) !important;
-  width: clamp(40px, 8vw, 48px) !important;
-  height: clamp(40px, 8vw, 48px) !important;
-  border-radius: 50% !important;
-  padding: 0 !important;
-  transition: all var(--fast) var(--ease) !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-}
-
-.market_cart button:hover {
-  background: var(--card-2) !important;
-  border-color: var(--border-2) !important;
-  transform: scale(1.05) !important;
-}
-
-.market_cart button:active {
-  transform: scale(0.95) !important;
-}
-
-.market_cart button .material-symbols-outlined {
-  font-size: clamp(20px, 4vw, 22px) !important;
-}
-
-/* ================================================================
-   SIDE MENU (List)
-   ================================================================ */
-
-.List {
-  position: fixed;
-  top: 0;
-  left: -100%;
-  width: min(320px, 85vw);
-  height: 100vh;
-  background: rgba(15, 15, 15, 0.98);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-right: 1px solid var(--border-2);
-  transition: left var(--mid) var(--ease);
-  z-index: 1001;
-  box-shadow: 4px 0 30px rgba(0, 0, 0, 0.5);
-}
-
-.List.open {
-  left: 0;
-}
-
-.List ul {
-  list-style: none;
-  margin: 0;
-  padding: clamp(20px, 5vh, 30px) 0;
-}
-
-.List li {
-  width: 100%;
-  opacity: 0;
-  transform: translateX(-20px);
-  transition: all var(--mid) var(--ease);
-}
-
-.List.open li {
-  opacity: 1;
-  transform: translateX(0);
-}
-
-.List.open li:nth-child(1) { transition-delay: 0.05s; }
-.List.open li:nth-child(2) { transition-delay: 0.1s; }
-.List.open li:nth-child(3) { transition-delay: 0.15s; }
-.List.open li:nth-child(4) { transition-delay: 0.2s; }
-
-.List .object {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  min-height: 70px;
-  padding: 0 clamp(24px, 5vw, 32px);
-  color: var(--white);
-  text-decoration: none;
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: clamp(18px, 4vw, 20px);
-  letter-spacing: 0.08em;
-  transition: all var(--fast) var(--ease);
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-}
-
-.List .object::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 3px;
-  height: 100%;
-  background: var(--red);
-  transform: scaleY(0);
-  transition: transform var(--mid) var(--ease);
-}
-
-.List .object:hover {
-  background: rgba(255, 255, 255, 0.05);
-  padding-left: calc(clamp(24px, 5vw, 32px) + 10px);
-}
-
-.List .object:hover::before {
-  transform: scaleY(1);
-}
-
-/* ================================================================
-   OVERLAY
-   ================================================================ */
-
-.overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(4px);
-  z-index: 1000;
-  animation: overlayFade 0.3s var(--ease);
+  outline-offset: 3px;
+  border-radius: 4px;
 }
 
 @keyframes overlayFade {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-/* ================================================================
-   RTL SUPPORT
-   ================================================================ */
-
-header.rtl {
-  direction: rtl;
-}
-
-header.ltr {
-  direction: ltr;
-}
-
-.rtl .Logo_box {
-  flex-direction: row-reverse;
-}
-
-.rtl .Search_box .material-symbols-outlined {
-  right: auto;
-  left: 16px;
-}
-
-.rtl .Search_box input {
-  padding: 0 20px 0 48px;
-}
-
-.rtl .counter {
-  right: auto;
-  left: -6px;
-}
-
-.rtl .List {
-  left: auto;
-  right: -100%;
-  border-right: none;
-  border-left: 1px solid var(--border-2);
-}
-
-.rtl .List.open {
-  left: auto;
-  right: 0;
-}
-
-.rtl .List .object::before {
-  left: auto;
-  right: 0;
-}
-
-.rtl .List .object:hover {
-  padding-left: clamp(24px, 5vw, 32px);
-  padding-right: calc(clamp(24px, 5vw, 32px) + 10px);
-}
-
-.rtl .List.open li {
-  transform: translateX(20px);
-}
-
-.rtl .List.open li {
-  transform: translateX(0);
-}
-
-/* ================================================================
-   RESPONSIVE DESIGN
-   ================================================================ */
-
-/* Small phones (320px - 480px) */
-@media (max-width: 480px) {
-  header {
-    gap: 12px;
-    padding: 12px 16px;
-  }
-  
-  .Logo_box {
-    gap: 10px;
-  }
-  
-  .List_box {
-    width: 40px;
-    height: 40px;
-    gap: 5px;
-  }
-  
-  .List_box div {
-    width: 18px;
-  }
-  
-  .Strike_Logo_For_Header {
-    width: 100px;
-  }
-  
-  .Search_box {
-    max-width: none;
-    min-width: auto;
-    flex: 1;
-  }
-  
-  .Search_box input {
-    height: 40px;
-    font-size: 12px;
-    padding: 0 40px 0 16px;
-  }
-  
-  .market_cart {
-    gap: 8px;
-  }
-  
-  .market_cart > div,
-  .market_cart button {
-    width: 40px;
-    height: 40px;
-  }
-  
-  .counter {
-    font-size: 9px;
-    min-width: 16px;
-    height: 16px;
-    top: -4px;
-    right: -4px;
-  }
-  
-  .List {
-    width: 85vw;
-  }
-  
-  .List .object {
-    min-height: 60px;
-    font-size: 16px;
-  }
-}
-
-/* Medium devices (481px - 768px) */
-@media (min-width: 481px) and (max-width: 768px) {
-  header {
-    gap: 16px;
-    padding: 14px 24px;
-  }
-  
-  .Strike_Logo_For_Header {
-    width: 130px;
-  }
-  
-  .Search_box {
-    max-width: 280px;
-  }
-  
-  .List {
-    width: 300px;
-  }
-}
-
-/* Tablets (769px - 1024px) */
-@media (min-width: 769px) and (max-width: 1024px) {
-  .Search_box {
-    max-width: 320px;
-  }
-  
-  .Strike_Logo_For_Header {
-    width: 140px;
-  }
-}
-
-/* Desktop (1025px+) */
-@media (min-width: 1025px) {
-  .Search_box {
-    max-width: 400px;
-  }
-  
-  .List {
-    width: 320px;
-  }
-}
-
-/* ================================================================
-   SCROLL STATE
-   ================================================================ */
-
-header.scrolled {
-  padding-block: 10px;
-}
-
-header.scrolled .Strike_Logo_For_Header {
-  width: clamp(110px, 22vw, 140px);
-}
-
-/* ================================================================
-   TOUCH OPTIMIZATION
-   ================================================================ */
-
-@media (hover: none) and (pointer: coarse) {
-  .List_box:active {
-    transform: scale(0.96);
-  }
-  
-  .market_cart > div:active,
-  .market_cart button:active {
-    transform: scale(0.95);
-  }
-  
-  .List .object:active {
-    background: rgba(255, 255, 255, 0.08);
-  }
-}
-
-/* ================================================================
-   ACCESSIBILITY - Reduced Motion
-   ================================================================ */
-
-@media (prefers-reduced-motion: reduce) {
-  .List,
-  .List .object,
-  .List_box div,
-  .counter {
-    transition: none;
-    animation: none;
-  }
-  
-  .List.open li {
-    transition: none;
-  }
-  
-  .counter {
-    animation: none;
-  }
-}
-
-/* ================================================================
-   FOCUS VISIBLE
-   ================================================================ */
-
-.List_box:focus-visible,
-.market_cart > div:focus-visible,
-.market_cart button:focus-visible,
-.Search_box input:focus-visible {
-  outline: 2px solid var(--red);
-  outline-offset: 3px;
-  border-radius: var(--r-md);
-}
-
-.List .object:focus-visible {
-  outline: 2px solid var(--red);
-  outline-offset: -2px;
-  background: rgba(255, 255, 255, 0.05);
-}
-
-/* ================================================================
-   SEARCH SLOT (When searchSlot is provided)
-   ================================================================ */
-
-/* Target the container that wraps searchSlot */
-header > :nth-child(2) {
-  flex: 1;
-  max-width: 400px;
-  min-width: 180px;
-}
-
-@media (max-width: 480px) {
-  header > :nth-child(2) {
-    max-width: none;
-    flex: 1;
-  }
-}
-
-/* ================================================================
-   UTILITY CLASSES
-   ================================================================ */
-
-.no-scroll {
-  overflow: hidden;
-}
-
-/* ================================================================
-   HOVER EFFECTS (Desktop Only)
-   ================================================================ */
-
-@media (hover: hover) {
-  .List .object {
-    position: relative;
-  }
-  
-  .List .object::after {
-    content: '';
-    position: absolute;
-    right: 20px;
-    top: 50%;
-    transform: translateY(-50%) translateX(-10px);
-    width: 6px;
-    height: 6px;
-    border-top: 1.5px solid var(--muted);
-    border-right: 1.5px solid var(--muted);
-    transform: rotate(45deg);
-    opacity: 0;
-    transition: all var(--fast) var(--ease);
-  }
-  
-  .List .object:hover::after {
-    opacity: 1;
-    transform: translateY(-50%) translateX(0) rotate(45deg);
-  }
-  
-  .rtl .List .object::after {
-    right: auto;
-    left: 20px;
-    transform: translateY(-50%) translateX(10px) rotate(-135deg);
-  }
-  
-  .rtl .List .object:hover::after {
-    transform: translateY(-50%) translateX(0) rotate(-135deg);
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
