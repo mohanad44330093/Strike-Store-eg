@@ -1431,6 +1431,10 @@ body {
   .features_section {
     grid-template-columns: 1fr;
   }
+
+  .List {
+    top: 183px;
+  }
 }
 
 @media (max-width: 768px) {
@@ -1509,6 +1513,10 @@ body {
     width: 85%;
     max-width: 320px;
   }
+
+  .List {
+    top: 170px;
+  }
 }
 
 @media (max-width: 500px) {
@@ -1536,6 +1544,9 @@ body {
 
   .header_left {
     gap: 14px;
+  }
+  .List {
+    top: 170px;
   }
 }
 
