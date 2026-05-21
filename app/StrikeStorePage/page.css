@@ -62,7 +62,7 @@
   --touch:  44px;
 
   /* sidebar width — clamps between 300px and 420px */
-  --sidebar-w: clamp(300px, 85vw, 420px);
+  --sidebar-w: clamp(400px);
 
   /* card image height — shrinks on small screens */
   --card-img-h: clamp(200px, 52vw, 320px);
