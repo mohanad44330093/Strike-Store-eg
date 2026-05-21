@@ -1309,14 +1309,21 @@ select option {
 .size_modal_overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.7);
+
+  background: rgba(0,0,0,0.75);
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   z-index: 9999;
+
   padding: 20px;
-  backdrop-filter: blur(4px);
-  animation: fadeInOverlay 0.3s ease;
+
+  overflow-y: auto;
+
+  /* احذف دي */
+  /* backdrop-filter: blur(4px); */
 }
 
 @keyframes fadeInOverlay {
@@ -1340,6 +1347,7 @@ select option {
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   animation: slideUpModal 0.3s ease;
   position: relative;
+  overflow: visible;
 }
 
 @keyframes slideUpModal {
@@ -1354,20 +1362,21 @@ select option {
 }
 
 .size_modal_close {
-  position: fixed; /* بدل absolute */
-  top: 20px;
-  right: 20px;
+  position: absolute;
 
-  width: 42px;
-  height: 42px;
+  top: 12px;
+  right: 12px;
 
-  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+
   border: none;
+  border-radius: 50%;
 
-  background: rgba(0,0,0,0.75);
+  background: #111;
   color: #fff;
 
-  font-size: 22px;
+  font-size: 24px;
 
   display: flex;
   align-items: center;
@@ -1377,9 +1386,11 @@ select option {
 
   z-index: 999999;
 
-  -webkit-tap-highlight-color: transparent;
+  pointer-events: auto;
 
   touch-action: manipulation;
+
+  -webkit-tap-highlight-color: transparent;
 }
 
 .size_modal_close:hover {
@@ -1593,11 +1604,6 @@ select option {
 
     border-radius: 14px;
   }
-
-  .size_modal_close {
-    z-index: 10000;
-  }
-
 }
 
 @media (max-width: 1000px) {
@@ -1610,11 +1616,6 @@ select option {
         position: relative;
         top: 0;
     }
-
-    .size_modal_close {
-    z-index: 10000;
-  }
-
 }
 
 @media (max-width: 700px) {
@@ -1632,11 +1633,6 @@ select option {
     .summary_card h2 {
         font-size: 21px;
     }
-
-    .size_modal_close {
-    z-index: 10000;
-  }
-
 }
 
 @media (max-width: 900px) {
@@ -1658,10 +1654,6 @@ select option {
     position: relative;
     top: 0;
     order: -1;
-  }
-
-  .size_modal_close {
-    z-index: 10000;
   }
 }
 
@@ -1690,9 +1682,5 @@ select option {
   .co_summary_card {
     padding: 20px 16px;
     border-radius: 18px;
-  }
-
-  .size_modal_close {
-    z-index: 10000;
   }
 }
