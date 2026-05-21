@@ -64,6 +64,8 @@ body {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  position: fixed;
+  top: 0;
 }
 
 .header_top_row {
@@ -1075,6 +1077,7 @@ body {
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+  top: 183px;
 }
 
 /* LTR Menu: Opens from Left */
