@@ -579,7 +579,6 @@ cancel_link: cancelLink
                   const colors  = availableColors[item.id] ?? [];
                   const options = itemOptions[item.uniqueKey];
 
-                  // لو في أكتر من قطعة من نفس المنتج، وضّح رقم القطعة
                   const sameProductCount = cartItems.filter(
                     (c) => c.id === item.id
                   ).length;
@@ -642,15 +641,6 @@ cancel_link: cancelLink
                   );
                 })}
               </div>
-
-              {/* BUTTON */}
-              <button
-                className="confirm_btn"
-                onClick={handleSubmit}
-                disabled={submitting}
-              >
-                {submitting ? t.processing : t.confirmOrder}
-              </button>
             </div>
 
             {/* RIGHT — SUMMARY */}
@@ -696,6 +686,15 @@ cancel_link: cancelLink
                 <span>{total.toFixed(0)} EGP</span>
               </div>
             </div>
+
+            {/* BUTTON */}
+              <button
+                className="confirm_btn"
+                onClick={handleSubmit}
+                disabled={submitting}
+              >
+                {submitting ? t.processing : t.confirmOrder}
+              </button>
 
           </div>
         )}
