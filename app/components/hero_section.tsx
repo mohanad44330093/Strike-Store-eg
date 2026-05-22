@@ -38,9 +38,7 @@ function HeroSection() {
 
     return (
         <>
-            <section
-                className={`hero_section ${isArabic ? "rtl" : "ltr"}`}
-            >
+            <section className={`hero_section ${isArabic ? "rtl" : "ltr"}`}>
                 <div className="hero_content">
 
                     <span className="hero_badge">

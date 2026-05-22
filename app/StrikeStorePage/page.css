@@ -52,20 +52,27 @@ body {
 ========================================================= */
 
 .strike_header {
-  position: sticky;
-  top: 0;
-  z-index: 999;
-  width: 100%;
-  background: rgba(10, 10, 10, 0.85);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border-bottom: 1px solid var(--border);
-  padding: 16px 28px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
   position: fixed;
   top: 0;
+  left: 0;
+
+  z-index: 999;
+
+  width: 100%;
+
+  background: rgba(10, 10, 10, 0.85);
+
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+
+  border-bottom: 1px solid var(--border);
+
+  padding: 16px 28px;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 16px;
 }
 
 .header_top_row {
@@ -532,6 +539,12 @@ body {
   margin: auto;
 }
 
+@media (max-width: 860px) {
+  .features_section {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}
+
 .feature_box {
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid var(--border);
@@ -666,6 +679,7 @@ body {
   position: relative;
   display: flex;
   flex-direction: column;
+  height: 585px;
 }
 
 .product_card:hover {
@@ -1067,7 +1081,7 @@ body {
 
 .List {
   position: fixed;
-  top: var(--header-height);
+  top: 300;
   width: 320px;
   height: calc(100vh - var(--header-height));
   background: #0d0d0d;
@@ -1077,7 +1091,6 @@ body {
   display: flex;
   flex-direction: column;
   overflow-y: auto;
-  top: 183px;
 }
 
 /* LTR Menu: Opens from Left */
@@ -1423,136 +1436,251 @@ body {
   to { transform: rotate(360deg); }
 }
 
+.hero_section {
+      margin-top: 190px;
+    }
+
 /* =========================================================
-   RESPONSIVE — Calculate header height correctly
+   HEADER
 ========================================================= */
 
-@media (max-width: 1100px) {
-  .features_section {
-    grid-template-columns: 1fr;
-  }
+.strike_header {
 
-  .List {
-    top: 183px;
-  }
+  position: fixed;
+  top: 0;
+  left: 0;
+
+  width: 100%;
+
+  z-index: 9999;
+
+  background: rgba(10,10,10,0.92);
+
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+
+  padding: 16px 22px;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 16px;
 }
 
-@media (max-width: 768px) {
-  :root {
-    --header-height: 136px;
-  }
+/* =========================================================
+   TOP
+========================================================= */
 
-  .strike_header {
-    padding: 12px 16px;
-    gap: 12px;
-  }
+.header_top {
 
-  .Strike_Logo_For_Header {
-    font-size: 26px;
-  }
+  width: 100%;
 
-  .cart_btn,
-  .settings_btn,
-  .List_box {
-    width: 46px;
-    height: 46px;
-    border-radius: 15px;
-  }
-
-  .cart_btn span,
-  .settings_btn span {
-    font-size: 22px;
-  }
-
-  .hero_section {
-    padding: 40px 20px;
-    min-height: auto;
-  }
-
-  .hero_description {
-    font-size: 15px;
-  }
-
-  .hero_buttons {
-    width: 100%;
-    flex-direction: column;
-  }
-
-  .shop_btn,
-  .learn_btn {
-    width: 100%;
-  }
-
-  .features_section {
-    padding: 20px;
-    gap: 16px;
-  }
-
-  .sliders_wrapper {
-    padding: 10px 20px 60px;
-  }
-
-  .slider_title {
-    font-size: 26px;
-  }
-
-  .product_card {
-    min-width: 290px;
-    max-width: 290px;
-  }
-
-  .product_image_wrapper {
-    height: 330px;
-  }
-
-  .market_list {
-    width: 100%;
-  }
-
-  .List {
-    width: 85%;
-    max-width: 320px;
-  }
-
-  .List {
-    top: 170px;
-  }
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
-@media (max-width: 500px) {
-  .slider_header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 18px;
-  }
-
-  .slider_controls {
-    width: 100%;
-  }
-
-  .slider_arrow {
-    flex: 1;
-  }
-
-  .feature_box {
-    padding: 26px;
-  }
-
-  .product_card {
-    min-width: 85%;
-  }
-
-  .header_left {
-    gap: 14px;
-  }
-  .List {
-    top: 170px;
-  }
+.header_left {
+  display: flex;
+  align-items: center;
+  gap: 18px;
 }
 
-body.no_scroll {
-  overflow: hidden;
+.header_right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
+
+/* =========================================================
+   ACTIONS
+========================================================= */
+
+.market_cart {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cart_btn,
+.settings_btn,
+.mobile_search_toggle {
+
+  width: 50px;
+  height: 50px;
+
+  border-radius: 16px;
+
+  border: 1px solid rgba(255,255,255,0.08);
+
+  background: rgba(255,255,255,0.05);
+
+  color: white;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+
+  transition: 0.3s;
+}
+
+.cart_btn:hover,
+.settings_btn:hover,
+.mobile_search_toggle:hover {
+  background: rgba(255,255,255,0.09);
+}
+
+.counter {
+
+  position: absolute;
+
+  top: -5px;
+  right: -5px;
+
+  width: 18px;
+  height: 18px;
+
+  border-radius: 50%;
+
+  background: white;
+  color: black;
+
+  font-size: 10px;
+  font-weight: 700;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* =========================================================
+   MENU BUTTON
+========================================================= */
+
+.List_box {
+
+  width: 50px;
+  height: 50px;
+
+  border-radius: 16px;
+
+  background: rgba(255,255,255,0.05);
+
+  border: 1px solid rgba(255,255,255,0.08);
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  gap: 6px;
+
+  padding: 0 12px;
+
+  cursor: pointer;
+}
+
+.top_line,
+.middle_line,
+.end_line {
+
+  width: 100%;
+  height: 2px;
+
+  border-radius: 10px;
+
+  background: white;
+}
+
+/* =========================================================
+   LOGO
+========================================================= */
+
+.Logo {
+  cursor: pointer;
+}
+
+.Strike_Logo_For_Header {
+  object-fit: contain;
+}
+
+/* =========================================================
+   SIDE MENU
+========================================================= */
+
+.List {
+
+  position: fixed;
+
+  top: 145px;
+  left: -100%;
+
+  width: 320px;
+  height: calc(100vh - 145px);
+
+  background: #0d0d0d;
+
+  z-index: 9998;
+
+  transition: 0.3s;
+
+  padding: 24px;
+}
+
+.List.open {
+  left: 0;
+}
+
+.List ul {
+
+  list-style: none;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 14px;
+}
+
+.List .object {
+
+  width: 100%;
+  min-height: 60px;
+
+  border-radius: 18px;
+
+  background: rgba(255,255,255,0.05);
+
+  border: 1px solid rgba(255,255,255,0.08);
+
+  color: white;
+
+  display: flex;
+  align-items: center;
+
+  padding: 0 18px;
+
+  text-decoration: none;
+
+  font-weight: 700;
+}
+
+/* =========================================================
+   OVERLAY
+========================================================= */
+
+.menu_overlay {
+
+  position: fixed;
+  inset: 0;
+
+  background: rgba(0,0,0,0.5);
+
+  z-index: 9997;
+}
+
 
 /* ============================================== | */
 /* =======This code was written by Mohannad Ahmed | */

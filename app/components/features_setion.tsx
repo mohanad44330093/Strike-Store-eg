@@ -33,7 +33,7 @@ function FeatureSection() {
                             : "Performance Fit"}
                     </h2>
 
-                    <p>
+                    <p> 
                         {isArabic
                             ? "مصمم لدعم الحركة وتوفير أقصى درجات الراحة أثناء التمارين المكثفة."
                             : "Designed to support movement and maximize comfort during intense workouts."}
