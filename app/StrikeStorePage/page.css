@@ -1556,8 +1556,8 @@ body {
 
   border-radius: 50%;
 
-  background: white;
-  color: black;
+  background: transparent;
+  color: #fff;
 
   font-size: 10px;
   font-weight: 700;
