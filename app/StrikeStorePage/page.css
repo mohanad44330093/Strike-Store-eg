@@ -683,7 +683,7 @@ body {
   position: relative;
   display: flex;
   flex-direction: column;
-  height: 550px;
+  height: 450px;
 }
 
 .product_card:hover {
@@ -698,8 +698,8 @@ body {
 }
 
 .product_image_wrapper {
-  width: 100%;
-  height: 400px;
+  width: 80%;
+  height: 200px;
   position: relative;
   background: #0f0f0f;
 }
