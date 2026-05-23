@@ -12,6 +12,7 @@ import { initializeApp, getApps, getApp } from "firebase/app";
 import { getFirestore, collection, onSnapshot, query } from "firebase/firestore";
 import "./page.css";
 import Link from "next/link";
+import { div } from "framer-motion/client";
 
   /* ================= FIREBASE CONFIG ================= */
 
@@ -733,7 +734,7 @@ import Link from "next/link";
                 sectionId="long-sleeves"
               />
               <ProductSlider
-                title={isArabic ? "تانك توب" : "Tank Top Compression"}
+                title={isArabic ? "تانك توب" : "Tank Top"}
                 products={tankTopProducts}
                 scrollRef={tankTopScrollRef}
                 sectionId="tank-top"
