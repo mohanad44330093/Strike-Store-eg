@@ -695,6 +695,9 @@ body {
 .card_image_area {
   position: relative;
   overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .product_image_wrapper {
@@ -707,11 +710,13 @@ body {
 .product_image {
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
+  width: 90%;
+  height: 90%;
   object-fit: cover;
   opacity: 0;
   transition: .4s;
+  left: 20px;
+  top: 10px;
 }
 
 .slide_active {
