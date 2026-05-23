@@ -14,7 +14,6 @@ import {
 import emailjs from "@emailjs/browser";
 
 import "./page.css";
-import { label } from "framer-motion/client";
 
 /* ================= FIREBASE CONFIG ================= */
 
@@ -471,13 +470,6 @@ cancel_link: cancelLink
               >
                 ✕
               </button>
-              <div className="size_modal_image_container">
-                <img
-                  src="/images/W&H.png"
-                  alt="Size Guide"
-                  className="size_modal_image"
-                />
-              </div>
               <div className="size_modal_legend">
                 <h3>{t.sizeGuide}</h3>
                 <div className="size_legend_grid">

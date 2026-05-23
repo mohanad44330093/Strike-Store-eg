@@ -678,7 +678,7 @@ select option {
 
 .size_modal_image_container {
   width: 100%;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  background: linear-gradient(135deg, hsl(220, 6%, 10%) 0%, #1e2022 100%);
   padding: 30px 20px;
   display: flex;
   align-items: center;
@@ -700,13 +700,15 @@ select option {
 
 .size_modal_legend {
   padding: 30px;
+  background: #000;
+  border: 1px #fff solid;
 }
 
 .size_modal_legend h3 {
   font-size: 18px;
   font-weight: 700;
   margin-bottom: 20px;
-  color: #333;
+  color: #fff;
   text-align: center;
 }
 
@@ -717,12 +719,13 @@ select option {
 }
 
 .size_legend_item {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #000;
   border-radius: 12px;
   padding: 16px;
   color: white;
   transition: all 0.3s ease;
   cursor: default;
+  border: 1px #fff solid;
 }
 
 .size_legend_item:hover {
