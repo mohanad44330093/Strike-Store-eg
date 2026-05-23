@@ -324,16 +324,16 @@ import Link from "next/link";
 
   const links = isArabic
     ? [
-        { id: "short-sleeves", label: "أكمام قصيرة", icon: "fitness_center" },
-        { id: "long-sleeves", label: "أكمام طويلة", icon: "sports_gymnastics" },
-        { id: "tank-top", label: "تانك توب", icon: "self_improvement" },
+        { id: "short-sleeves", label: "أكمام قصيرة", icon: "apparel" },
+        { id: "long-sleeves", label: "أكمام طويلة", icon: "styler" },
+        { id: "tank-top", label: "تانك توب", icon: "fitness_center" },
         { id: "target_box", label: "المميزات", icon: "star" },
         { id: "about-us", label: "من نحن", icon: "info" },
       ]
     : [
-        { id: "short-sleeves", label: "Short Sleeves", icon: "fitness_center" },
-        { id: "long-sleeves", label: "Long Sleeves", icon: "sports_gymnastics" },
-        { id: "tank-top", label: "Tank Tops", icon: "self_improvement" },
+        { id: "short-sleeves", label: "Short Sleeves", icon: "apparel" },
+        { id: "long-sleeves", label: "Long Sleeves", icon: "styler" },
+        { id: "tank-top", label: "Tank Tops", icon: "fitness_center" }, 
         { id: "target_box", label: "Features", icon: "star" },
         { id: "about-us", label: "About Us", icon: "info" },
       ];
@@ -368,7 +368,7 @@ import Link from "next/link";
   );
 }
 
-  /* ================= MARKET LIST / CART (fixed: closes properly) ================= */
+  /* ================= MARKET LIST ================= */
 
   function MarketList({ isArabic, isOpen, items, onClose, onRemove, onIncrease, onDecrease }: {
     isArabic: boolean; isOpen: boolean; items: CartProduct[];

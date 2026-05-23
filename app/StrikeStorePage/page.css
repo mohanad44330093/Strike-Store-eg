@@ -679,7 +679,7 @@ body {
   position: relative;
   display: flex;
   flex-direction: column;
-  height: 585px;
+  height: 610px;
 }
 
 .product_card:hover {
@@ -997,7 +997,7 @@ body {
 
 .remove_btn {
   position: absolute;
-  top: 12px;
+  top: 80px;
   right: 12px;
   width: 38px;
   height: 38px;
@@ -1091,6 +1091,7 @@ body {
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+  margin-top: 25px;
 }
 
 /* LTR Menu: Opens from Left */
@@ -1437,7 +1438,7 @@ body {
 }
 
 .hero_section {
-      margin-top: 190px;
+      margin-top: 180px;
     }
 
 /* =========================================================

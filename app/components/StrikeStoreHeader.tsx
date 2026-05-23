@@ -23,8 +23,6 @@ export default function StrikeStoreHeader({
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [cartCount, setCartCount] = useState(0);
-
-  // ✅ الحالة الأساسية
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
 
   const cartIconRef = useRef<HTMLDivElement>(null);
@@ -147,7 +145,7 @@ export default function StrikeStoreHeader({
                   onClick={onOpenSettings}
                 >
                   <span className="material-symbols-outlined">
-                    settings
+                    
                   </span>
                 </button>
 
