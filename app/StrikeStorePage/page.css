@@ -838,7 +838,7 @@ body.no_scroll {
 
 .add_to_cart_btn {
   width: 100%;
-  height: 54px;
+  height: 30%;
   border: none;
   border-radius: 16px;
   background: #fff;
@@ -851,7 +851,6 @@ body.no_scroll {
   gap: 10px;
   cursor: pointer;
   transition: .25s;
-  margin-top: 18px;
 }
 
 .add_to_cart_btn:hover {
