@@ -502,14 +502,7 @@ import { div } from "framer-motion/client";
     const shortSleevesProducts = allProducts.filter((p) => p.category === "Short Sleeves Compression");
     const longSleevesProducts = allProducts.filter((p) => p.category === "Long Sleeves Compression");
     const tankTopProducts = allProducts.filter((p) => p.category === "Top Tank Compression");
-
-    useEffect(() => {
-      if (!sessionStorage.getItem("reloaded")) {
-        sessionStorage.setItem("reloaded", "true");
-        window.location.reload();
-      }
-    }, []);
-
+    
     /* ---- Firebase dynamic fetch ---- */
     useEffect(() => {
       const q = query(collection(db, "products"));
@@ -665,7 +658,6 @@ import { div } from "framer-motion/client";
 
     return (
       <>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
 
         <Toast message={toastMessage} visible={toastVisible} />
 
