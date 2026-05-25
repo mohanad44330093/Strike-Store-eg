@@ -3,9 +3,42 @@
 import { useEffect, useState, useRef, useCallback, Suspense } from "react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
-import { getFirestore, collection, onSnapshot, query } from "firebase/firestore";
-import { db } from "../lib/firebase";
+import {
+  initializeApp,
+  getApps,
+  getApp,
+} from "firebase/app";
+
+import {
+  getFirestore,
+  collection,
+  onSnapshot,
+  query,
+} from "firebase/firestore";
+
+/* ================= FIREBASE ================= */
+
+const firebaseConfig = {
+  apiKey: "AIzaSyD5QzxJsQe9x-IqPY5_rVFL_5itPUcI9sQ",
+  authDomain: "strik-store.firebaseapp.com",
+  databaseURL: "https://strik-store-default-rtdb.firebaseio.com",
+  projectId: "strik-store",
+  storageBucket: "strik-store.firebasestorage.app",
+  messagingSenderId: "524403653148",
+  appId: "1:524403653148:web:8756216aad2db867bb3dd9",
+  measurementId: "G-Z1ME3G1FKX",
+};
+
+const app =
+  getApps().length > 0
+    ? getApp()
+    : initializeApp(firebaseConfig);
+
+const db = getFirestore(app);
+
+
 import "./page.css";
+
 
 const AboutUs = dynamic(() => import("../AboutUs/page"), {
   ssr: false,
