@@ -1,12 +1,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 :root {
-  /* Dynamic Header Height (Top Row + Bottom Search Row) */
   --header-height: 154px;
   --bg: #0b0b0b;
   --border: rgba(255,255,255,0.08);
   --border-strong: rgba(255,255,255,0.16);
   --text-muted: #9d9d9d;
+}
+
+.strike_page_root * {
+  box-sizing: border-box;
 }
 
 * {
@@ -39,40 +42,27 @@ body {
     var(--bg);
 }
 
-.rtl {
-  direction: rtl;
-}
-
-.ltr {
-  direction: ltr;
-}
+.rtl { direction: rtl; }
+.ltr { direction: ltr; }
 
 /* =========================================================
-   HEADER — 2 ROWS LAYOUT
+   HEADER
 ========================================================= */
 
 .strike_header {
   position: fixed;
   top: 0;
   left: 0;
-
-  z-index: 999;
-
+  z-index: 9999;
   width: 100%;
   height: 130px;
-
-  background: rgba(10, 10, 10, 0.85);
-
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-
+  background: rgba(10, 10, 10, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border);
-
   padding: 16px 28px;
-
   display: flex;
   flex-direction: column;
-
   gap: 16px;
 }
 
@@ -128,15 +118,10 @@ body {
 .middle_line,
 .end_line {
   height: 2px;
+  width: 100%;
   border-radius: 10px;
   background: #fff;
   transition: .3s;
-}
-
-.top_line,
-.middle_line,
-.end_line {
-  width: 100%;
 }
 
 .List_box.active .top_line {
@@ -148,7 +133,6 @@ body {
 }
 
 .List_box.active .end_line {
-  width: 100%;
   transform: rotate(-45deg) translateY(-11px);
 }
 
@@ -430,6 +414,7 @@ body {
   padding: 50px 30px;
   position: relative;
   overflow: hidden;
+  margin-top: 180px;
 }
 
 .hero_section::before {
@@ -767,13 +752,8 @@ body {
   background: rgba(0, 0, 0, 0.85);
 }
 
-.slide_arrow_left {
-  left: 12px;
-}
-
-.slide_arrow_right {
-  right: 12px;
-}
+.slide_arrow_left { left: 12px; }
+.slide_arrow_right { right: 12px; }
 
 .slide_dots {
   position: absolute;
@@ -875,7 +855,6 @@ body {
 
 /* =========================================================
    CART SIDEBAR
-   Supports RTL & LTR sliding direction
 ========================================================= */
 
 .market_list {
@@ -892,26 +871,24 @@ body {
   overflow: hidden;
 }
 
-/* LTR Cart: Opens from Right */
 .market_list.ltr {
   right: 0;
   left: auto;
   border-left: 1px solid var(--border);
-  border-right: none;
   transform: translateX(100%);
 }
+
 .market_list.ltr.open {
   transform: translateX(0);
 }
 
-/* RTL Cart: Opens from Left */
 .market_list.rtl {
   left: 0;
   right: auto;
   border-right: 1px solid var(--border);
-  border-left: none;
   transform: translateX(-100%);
 }
+
 .market_list.rtl.open {
   transform: translateX(0);
 }
@@ -1037,9 +1014,7 @@ body {
   margin-bottom: 18px;
 }
 
-.total_price span {
-  color: #aaa;
-}
+.total_price span { color: #aaa; }
 
 .total_price h3 {
   font-size: 24px;
@@ -1079,18 +1054,15 @@ body {
   opacity: .4;
 }
 
-.empty_cart p {
-  font-size: 15px;
-}
+.empty_cart p { font-size: 15px; }
 
 /* =========================================================
-   SIDE MENU — Starts exactly under 2-row header
-   Supports RTL & LTR sliding direction
+   SIDE MENU
 ========================================================= */
 
 .List {
   position: fixed;
-  top: 300;
+  top: var(--header-height);
   width: 320px;
   height: calc(100vh - var(--header-height));
   background: #0d0d0d;
@@ -1103,31 +1075,28 @@ body {
   margin-top: 25px;
 }
 
-/* LTR Menu: Opens from Left */
 .List.ltr {
   left: 0;
   right: auto;
   border-right: 1px solid var(--border);
-  border-left: none;
   transform: translateX(-100%);
 }
+
 .List.ltr.open {
   transform: translateX(0);
 }
 
-/* RTL Menu: Opens from Right */
 .List.rtl {
   right: 0;
   left: auto;
   border-left: 1px solid var(--border);
-  border-right: none;
   transform: translateX(100%);
 }
+
 .List.rtl.open {
   transform: translateX(0);
 }
 
-/* MENU LINKS */
 .List ul {
   list-style: none;
   display: flex;
@@ -1135,9 +1104,7 @@ body {
   gap: 14px;
 }
 
-.List li {
-  width: 100%;
-}
+.List li { width: 100%; }
 
 .List .object {
   width: 100%;
@@ -1150,7 +1117,6 @@ body {
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.05);
   color: #fff;
-  text-decoration: none;
   font-size: 15px;
   font-weight: 700;
   letter-spacing: .5px;
@@ -1174,73 +1140,9 @@ body {
 }
 
 /* =========================================================
-   ABOUT US SECTION
+   OVERLAYS
 ========================================================= */
-.about_us_section {
-  padding: 80px 30px;
-  max-width: 1200px;
-  margin: 0 auto;
-  border-top: 1px solid var(--border);
-}
 
-.about_content {
-  display: flex;
-  align-items: center;
-  gap: 60px;
-}
-
-.about_text {
-  flex: 1;
-}
-
-.about_text h2 {
-  font-size: 38px;
-  font-weight: 800;
-  margin-bottom: 24px;
-  letter-spacing: -1px;
-}
-
-.about_text p {
-  color: var(--text-muted);
-  font-size: 16px;
-  line-height: 1.8;
-  margin-bottom: 20px;
-}
-
-.about_image_placeholder {
-  flex: 1;
-  border-radius: 30px;
-  overflow: hidden;
-  height: 380px;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01));
-  border: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-}
-
-.about_image_placeholder::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: url('https://images.pexels.com/photos/15373907/pexels-photo-15373907.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=500&w=700') center/cover no-repeat;
-  opacity: 0.6;
-  mix-blend-mode: luminosity;
-}
-
-@media (max-width: 900px) {
-  .about_content {
-    flex-direction: column;
-    gap: 30px;
-  }
-  .about_image_placeholder {
-    width: 100%;
-    height: 280px;
-  }
-}
-
-/* OVERLAYS */
 .menu_overlay,
 .cart_overlay {
   position: fixed;
@@ -1252,9 +1154,7 @@ body {
   animation: fadeOverlay .25s ease;
 }
 
-.cart_overlay {
-  z-index: 99998;
-}
+.cart_overlay { z-index: 99998; }
 
 @keyframes fadeOverlay {
   from { opacity: 0; }
@@ -1295,13 +1195,9 @@ body {
   border-bottom: 1px solid var(--border);
 }
 
-.settings_header h2 {
-  font-size: 22px;
-}
+.settings_header h2 { font-size: 22px; }
 
-.settings_content {
-  padding: 24px;
-}
+.settings_content { padding: 24px; }
 
 .setting_label {
   display: block;
@@ -1409,9 +1305,7 @@ body {
   margin: auto;
 }
 
-.footer_bottom {
-  text-align: center;
-}
+.footer_bottom { text-align: center; }
 
 .footer_copyright {
   color: #777;
@@ -1446,252 +1340,21 @@ body {
   to { transform: rotate(360deg); }
 }
 
-.hero_section {
-      margin-top: 180px;
-    }
+/* ============================================== */
+/* =======This code was written by Mohannad Ahmed */
+/* ============================================== */
 
-/* =========================================================
-   HEADER
-========================================================= */
 
-.strike_header {
 
-  position: fixed;
-  top: 0;
-  left: 0;
 
-  width: 100%;
 
-  z-index: 9999;
 
-  background: rgba(10,10,10,0.92);
 
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
 
-  border-bottom: 1px solid rgba(255,255,255,0.08);
 
-  padding: 10px 22px;
 
-  display: flex;
-  flex-direction: column;
 
-  gap: 16px;
-}
 
-/* =========================================================
-   TOP
-========================================================= */
 
-.header_top {
 
-  width: 100%;
 
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.header_left {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-}
-
-.header_right {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-/* =========================================================
-   ACTIONS
-========================================================= */
-
-.market_cart {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.cart_btn,
-.settings_btn,
-.mobile_search_toggle {
-
-  width: 50px;
-  height: 50px;
-
-  border-radius: 16px;
-
-  border: 1px solid rgba(255,255,255,0.08);
-
-  background: rgba(255,255,255,0.05);
-
-  color: white;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  cursor: pointer;
-
-  transition: 0.3s;
-}
-
-.cart_btn:hover,
-.settings_btn:hover,
-.mobile_search_toggle:hover {
-  background: rgba(255,255,255,0.09);
-}
-
-.counter {
-
-  position: absolute;
-
-  top: -5px;
-  right: -5px;
-
-  width: 18px;
-  height: 18px;
-
-  border-radius: 50%;
-
-  background: transparent;
-  color: #fff;
-
-  font-size: 10px;
-  font-weight: 700;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* =========================================================
-   MENU BUTTON
-========================================================= */
-
-.List_box {
-
-  width: 50px;
-  height: 50px;
-
-  border-radius: 16px;
-
-  background: rgba(255,255,255,0.05);
-
-  border: 1px solid rgba(255,255,255,0.08);
-
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-
-  gap: 6px;
-
-  padding: 0 12px;
-
-  cursor: pointer;
-}
-
-.top_line,
-.middle_line,
-.end_line {
-
-  width: 100%;
-  height: 2px;
-
-  border-radius: 10px;
-
-  background: white;
-}
-
-/* =========================================================
-   LOGO
-========================================================= */
-
-.Logo {
-  cursor: pointer;
-}
-
-.Strike_Logo_For_Header {
-  object-fit: contain;
-}
-
-/* =========================================================
-   SIDE MENU
-========================================================= */
-
-.List {
-
-  position: fixed;
-
-  top: 105px;
-  left: -100%;
-
-  width: 320px;
-  height: calc(100vh - 145px);
-
-  background: #0d0d0d;
-
-  z-index: 9998;
-
-  transition: 0.3s;
-
-  padding: 24px;
-}
-
-.List.open {
-  left: 0;
-}
-
-.List ul {
-
-  list-style: none;
-
-  display: flex;
-  flex-direction: column;
-
-  gap: 14px;
-}
-
-.List .object {
-
-  width: 100%;
-  min-height: 60px;
-
-  border-radius: 18px;
-
-  background: rgba(255,255,255,0.05);
-
-  border: 1px solid rgba(255,255,255,0.08);
-
-  color: white;
-
-  display: flex;
-  align-items: center;
-
-  padding: 0 18px;
-
-  text-decoration: none;
-
-  font-weight: 700;
-}
-
-/* =========================================================
-   OVERLAY
-========================================================= */
-
-.menu_overlay {
-
-  position: fixed;
-  inset: 0;
-
-  background: rgba(0,0,0,0.5);
-
-  z-index: 9997;
-}
-
-
-/* ============================================== | */
-/* =======This code was written by Mohannad Ahmed | */
-/* ============================================== | */

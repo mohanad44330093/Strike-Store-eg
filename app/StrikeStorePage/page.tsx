@@ -11,8 +11,6 @@ import { useRouter } from "next/navigation";
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getFirestore, collection, onSnapshot, query } from "firebase/firestore";
 import "./page.css";
-import Link from "next/link";
-import { div } from "framer-motion/client";
 
   /* ================= FIREBASE CONFIG ================= */
 
@@ -502,7 +500,7 @@ import { div } from "framer-motion/client";
     const shortSleevesProducts = allProducts.filter((p) => p.category === "Short Sleeves Compression");
     const longSleevesProducts = allProducts.filter((p) => p.category === "Long Sleeves Compression");
     const tankTopProducts = allProducts.filter((p) => p.category === "Top Tank Compression");
-    
+
     /* ---- Firebase dynamic fetch ---- */
     useEffect(() => {
       const q = query(collection(db, "products"));
@@ -686,7 +684,7 @@ import { div } from "framer-motion/client";
           onDecrease={decreaseQuantity}
         />
 
-        <div className={`container ${isArabic ? "rtl" : "ltr"}`}>
+        <div className={`strike_page_root container ${isArabic ? "rtl" : "ltr"}`}>
           <Header
             isArabic={isArabic}
             products={allProducts}
