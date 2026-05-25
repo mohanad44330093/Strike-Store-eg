@@ -504,8 +504,10 @@ import { div } from "framer-motion/client";
     const tankTopProducts = allProducts.filter((p) => p.category === "Top Tank Compression");
 
     useEffect(() => {
+      if (!sessionStorage.getItem("reloaded")) {
         sessionStorage.setItem("reloaded", "true");
         window.location.reload();
+      }
     }, []);
 
     /* ---- Firebase dynamic fetch ---- */
