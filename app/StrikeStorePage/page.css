@@ -1533,7 +1533,7 @@ body.no_scroll {
   .product_card {
     min-width: 240px;
     max-width: 240px;
-    height: 360px;
+    height: 500px;
   }
 
   .cart_btn,
