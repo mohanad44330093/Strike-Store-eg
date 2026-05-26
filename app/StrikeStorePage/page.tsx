@@ -667,7 +667,7 @@ export default function MainPageEN() {
       <div className="slider_controls">
         <button className="slider_arrow" onClick={() => scroll(scrollRef, "left")}>‹</button>
         <button className="slider_arrow" onClick={() => scroll(scrollRef, "right")}>›</button>
-      </div>
+      </div><br /><br />
       {products.length === 0 ? (
         <div className="slider_empty">{isArabic ? "سيتم الاضافة قريباً" : "Coming Soon"}</div>
       ) : (
