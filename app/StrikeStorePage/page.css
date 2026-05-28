@@ -712,7 +712,7 @@ body.no_scroll {
   position: relative;
   display: flex;
   flex-direction: column;
-  height: 450px;
+  height: 400px;
   flex-shrink: 0;
 }
 
