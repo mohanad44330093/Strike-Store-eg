@@ -712,12 +712,11 @@ body.no_scroll {
   position: relative;
   display: flex;
   flex-direction: column;
-  height: 400px;
+  height: 100px;
   flex-shrink: 0;
 }
 
 .product_card:hover {
-  transform: translateY(-8px);
   border-color: rgba(255, 255, 255, 0.18);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
 }
@@ -898,6 +897,7 @@ body.no_scroll {
   align-items: center;
   justify-content: flex-start;
   margin-bottom: 12px;
+  margin-top: -20px;
   flex-wrap: wrap;
   gap: 8px;
 }
@@ -1386,6 +1386,7 @@ body.no_scroll {
   border-radius: 50px;
   display: flex;
   align-items: center;
+  flex-direction: column;
   gap: 10px;
   font-weight: 700;
   opacity: 0;
@@ -1394,6 +1395,7 @@ body.no_scroll {
   z-index: 9999999;
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
   white-space: nowrap;
+  max-width: 90%;
 }
 
 .toast_visible {
