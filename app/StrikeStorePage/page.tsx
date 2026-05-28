@@ -716,7 +716,7 @@ export default function MainPageEN() {
 
   return (
     <>
-      <Toast message={toastMessage} visible={toastVisible} />
+      <Toast message={'Added To Cart'} visible={toastVisible} />
 
       <SettingsModal
         visible={settingsModalVisible}

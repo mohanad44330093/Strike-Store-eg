@@ -498,61 +498,7 @@ cancel_link: cancelLink
         ) : (
           <div className="checkout_layout">
 
-            {/* LEFT */}
-            <div className="checkout_form">
-
-              {/* CUSTOMER */}
-              <div className="checkout_section">
-                <h2>{t.customerInfo}</h2>
-
-                <input
-                  type="text"
-                  name="fullName"
-                  placeholder={t.fullName}
-                  value={formData.fullName}
-                  onChange={handleInput}
-                />
-
-                <input
-                  type="tel"
-                  name="phone"
-                  placeholder={t.phone}
-                  value={formData.phone}
-                  onChange={handleInput}
-                />
-
-                <input
-  type="email"
-  name="email"
-  placeholder={t.email}
-  value={formData.email}
-  onChange={handleInput}
-/>
-
-                <select
-                  name="governorate"
-                  value={formData.governorate}
-                  onChange={handleInput}
-                  className="governorate_select"
-                >
-                  <option value="">
-                    {isArabic ? "اختر المحافظة" : "Select Governorate"}
-                  </option>
-                  <option value="Cairo">{isArabic ? "القاهرة" : "Cairo"}</option>
-                  <option value="Giza">{isArabic ? "الجيزة" : "Giza"}</option>
-                </select>
-
-                <br /><br />
-
-                <textarea
-                  name="address"
-                  placeholder={t.address}
-                  value={formData.address}
-                  onChange={handleInput}
-                />
-              </div>
-
-              {/* PRODUCT OPTIONS */}
+            {/* PRODUCT OPTIONS */}
               <div className="checkout_section">
                 <div className="options_header">
                   <h2>{t.productOptions}</h2>
@@ -612,27 +558,66 @@ cancel_link: cancelLink
                           ))}
                         </div>
                       </div>
-
-                      {/* COLORS */}
-                      <div className="co_field">
-                        <label>{t.color}</label>
-                        <div className="co_color_grid">
-                          {colors.map((color) => (
-                            <button
-                              key={color}
-                              type="button"
-                              className={`co_color_btn ${options?.color === color ? "co_color_active" : ""}`}
-                              onClick={() => setColor(item.uniqueKey, color)}
-                            >
-                              {color}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
                     </div>
                   );
                 })}
               </div>
+
+            {/* LEFT */}
+            <div className="checkout_form">
+
+              {/* CUSTOMER */}
+              <div className="checkout_section">
+                <h2>{t.customerInfo}</h2>
+
+                <input
+                  type="text"
+                  name="fullName"
+                  placeholder={t.fullName}
+                  value={formData.fullName}
+                  onChange={handleInput}
+                />
+
+                <input
+                  type="tel"
+                  name="phone"
+                  placeholder={t.phone}
+                  value={formData.phone}
+                  onChange={handleInput}
+                />
+
+                <input
+                  type="email"
+                  name="email"
+                  placeholder={t.email}
+                  value={formData.email}
+                  onChange={handleInput}
+                />
+
+                <select
+                  name="governorate"
+                  value={formData.governorate}
+                  onChange={handleInput}
+                  className="governorate_select"
+                >
+                  <option value="">
+                    {isArabic ? "اختر المحافظة" : "Select Governorate"}
+                  </option>
+                  <option value="Cairo">{isArabic ? "القاهرة" : "Cairo"}</option>
+                  <option value="Giza">{isArabic ? "الجيزة" : "Giza"}</option>
+                </select>
+
+                <br /><br />
+
+                <textarea
+                  name="address"
+                  placeholder={t.address}
+                  value={formData.address}
+                  onChange={handleInput}
+                />
+              </div>
+
+              
             </div>
 
             {/* RIGHT — SUMMARY */}
