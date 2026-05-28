@@ -1538,7 +1538,11 @@ body.no_scroll {
   .product_card {
     min-width: 240px;
     max-width: 240px;
-    height: 500px;
+    height: 420px;
+  }
+
+  .product_price_section {
+    margin-top: -40px;
   }
 
   .cart_btn,

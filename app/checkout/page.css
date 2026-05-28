@@ -643,7 +643,7 @@ select option {
 
 .size_modal_close {
   position: absolute;
-  top: 14px;
+  top: 50px;
   right: 14px;
   width: 46px;
   height: 46px;
