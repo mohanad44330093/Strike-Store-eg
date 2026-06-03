@@ -111,13 +111,13 @@ function AboutUsPage() {
 
                             <h3>
                                 {isArabic
-                                    ? "جودة احترافية"
+                                    ? "جودة ممتازه"
                                     : "Elite Quality"}
                             </h3>
 
                             <p>
                                 {isArabic
-                                    ? "خامات قوية وتشطيبات فاخرة مصممة لتدوم."
+                                    ? "تصاميم مميزة و خامات قوية مصممة لتدوم."
                                     : "Premium fabrics and luxury finishes made to last."}
                             </p>
                         </div>

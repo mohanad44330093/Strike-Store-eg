@@ -9,7 +9,6 @@ import {
   collection,
   addDoc,
   serverTimestamp,
-  getDocs,
 } from "firebase/firestore";
 import emailjs from "@emailjs/browser";
 
@@ -43,15 +42,6 @@ interface CartItem {
 
 interface ExpandedCartItem extends CartItem {
   uniqueKey: string;
-}
-
-interface CartItemWithOptions extends ExpandedCartItem {
-  selectedSize: string;
-  selectedColor: string;
-}
-
-interface AvailableColors {
-  [productId: string]: string[];
 }
 
 /* ================= SIZES ================= */
@@ -91,7 +81,7 @@ const SIZES = [
     weight: "100 - 115",
     height: "45cm - 60cm",
     width: "30cm - 40cm",
-  }
+  },
 ];
 
 /* ================= TRANSLATIONS ================= */
@@ -111,9 +101,8 @@ const translations = {
     confirmOrder: "Confirm Order",
     processing: "Processing...",
     size: "Size",
-    color: "Color",
     productOptions: "Product Options",
-    toastMessage: "Order placed successfully. Please Comfirm Your Order On Your Email",
+    toastMessage: "Order placed successfully. Please Confirm Your Order On Your Email",
     sizeGuide: "Size Guide",
     tapToView: "Tap to view size details",
     piece: "Piece",
@@ -132,9 +121,8 @@ const translations = {
     confirmOrder: "تأكيد الطلب",
     processing: "جاري المعالجة...",
     size: "المقاس",
-    color: "اللون",
     productOptions: "خيارات المنتجات",
-    toastMessage: "تم ارسال الطلب بنجاح، يرجي تأكيد الطلب  عن طريق البريد الإلكتروني",
+    toastMessage: "تم ارسال الطلب بنجاح، يرجي تأكيد الطلب عن طريق البريد الإلكتروني",
     sizeGuide: "دليل المقاسات",
     tapToView: "اضغط لعرض تفاصيل المقاسات",
     piece: "قطعة",
@@ -150,12 +138,11 @@ export default function CheckoutPage() {
   const [cartItems, setCartItems] = useState<ExpandedCartItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [availableColors, setAvailableColors] = useState<AvailableColors>({});
   const [toastVisible, setToastVisible] = useState(false);
   const [showSizeModal, setShowSizeModal] = useState(false);
 
   const [itemOptions, setItemOptions] = useState<
-    Record<string, { size: string; color: string }>
+    Record<string, { size: string }>
   >({});
 
   const [formData, setFormData] = useState({
@@ -186,7 +173,6 @@ export default function CheckoutPage() {
     if (savedCart) {
       const parsed: CartItem[] = JSON.parse(savedCart);
 
-      // افرد كل item حسب الـ quantity — كل قطعة بـ uniqueKey خاص بيها
       const expanded: ExpandedCartItem[] = [];
       parsed.forEach((item) => {
         for (let i = 0; i < item.quantity; i++) {
@@ -196,36 +182,14 @@ export default function CheckoutPage() {
 
       setCartItems(expanded);
 
-      const initOptions: Record<string, { size: string; color: string }> = {};
+      const initOptions: Record<string, { size: string }> = {};
       expanded.forEach((item) => {
-        initOptions[item.uniqueKey] = { size: "", color: "" };
+        initOptions[item.uniqueKey] = { size: "" };
       });
       setItemOptions(initOptions);
     }
 
     setLoading(false);
-  }, []);
-
-  /* ================= FETCH COLORS ================= */
-
-  useEffect(() => {
-    const fetchColors = async () => {
-      try {
-        const snapshot = await getDocs(collection(db, "colors"));
-        const colorMap: AvailableColors = {};
-        snapshot.forEach((doc) => {
-          const data = doc.data();
-          const pid = data.productId ?? doc.id;
-          if (Array.isArray(data.colors)) {
-            colorMap[pid] = data.colors;
-          }
-        });
-        setAvailableColors(colorMap);
-      } catch (e) {
-        console.log(e);
-      }
-    };
-    fetchColors();
   }, []);
 
   /* ================= HANDLERS ================= */
@@ -258,13 +222,6 @@ export default function CheckoutPage() {
     }));
   };
 
-  const setColor = (uniqueKey: string, color: string) => {
-    setItemOptions((prev) => ({
-      ...prev,
-      [uniqueKey]: { ...prev[uniqueKey], color },
-    }));
-  };
-
   /* ================= SUBMIT ================= */
 
   const handleSubmit = async () => {
@@ -287,29 +244,18 @@ export default function CheckoutPage() {
       return;
     }
 
-    /* ================= VALIDATE SIZE AND COLOR لكل قطعة ================= */
+    /* ================= VALIDATE SIZE لكل قطعة ================= */
 
     for (let i = 0; i < cartItems.length; i++) {
       const item = cartItems[i];
       const options = itemOptions[item.uniqueKey];
-      const pieceLabel = isArabic
-        ? `${t.piece} ${i + 1} — ${item.title}`
-        : `${t.piece} ${i + 1} — ${item.title}`;
+      const pieceLabel = `${t.piece} ${i + 1} — ${item.title}`;
 
       if (!options?.size) {
         alert(
           isArabic
             ? `يرجى اختيار مقاس لـ: ${pieceLabel}`
             : `Please select a size for: ${pieceLabel}`
-        );
-        return;
-      }
-
-      if (!options?.color) {
-        alert(
-          isArabic
-            ? `يرجى اختيار لون لـ: ${pieceLabel}`
-            : `Please select a color for: ${pieceLabel}`
         );
         return;
       }
@@ -321,10 +267,9 @@ export default function CheckoutPage() {
       const subtotal = cartItems.reduce((sum, item) => sum + item.price, 0);
       const total = subtotal + 50;
 
-      const itemsWithOptions: CartItemWithOptions[] = cartItems.map((item) => ({
+      const itemsWithOptions = cartItems.map((item) => ({
         ...item,
         selectedSize: itemOptions[item.uniqueKey]?.size,
-        selectedColor: itemOptions[item.uniqueKey]?.color,
       }));
 
       /* ================= SAVE ORDER TO FIRESTORE ================= */
@@ -342,92 +287,58 @@ export default function CheckoutPage() {
         status:              "pending",
         paymentMethod:       "Cash On Delivery",
         createdAt:           serverTimestamp(),
-        expiresAt: new Date(Date.now() + 15 * 60 * 1000),
+        expiresAt:           new Date(Date.now() + 15 * 60 * 1000),
       });
 
       const orderId = orderRef.id;
 
-      const confirmLink =
-  `https://strike-store-eg-ss55.vercel.app/confirm-order?id=${orderId}`;
-
-const cancelLink =
-  `https://strike-store-eg-ss55.vercel.app/cancel-order?id=${orderId}`;
-
+      const confirmLink = `https://strike-store-eg-ss55.vercel.app/confirm-order?id=${orderId}`;
+      const cancelLink  = `https://strike-store-eg-ss55.vercel.app/cancel-order?id=${orderId}`;
 
       const itemsSummary = itemsWithOptions
-  .map((item) => {
-    return (
-      `• ${item.title} — ${item.price.toFixed(0)} EGP` +
-      (item.selectedSize
-        ? ` | Size: ${item.selectedSize}`
-        : "") +
-      (item.selectedColor
-        ? ` | Color: ${item.selectedColor}`
-        : "")
-    );
-  })
-  .join("\n");
-      
-     await emailjs.send(
-"service_bxrt7vl",
-"template_8eqr6gq",
-{
-customer_name: formData.fullName,
+        .map((item) =>
+          `• ${item.title} — ${item.price.toFixed(0)} EGP` +
+          (item.selectedSize ? ` | Size: ${item.selectedSize}` : "")
+        )
+        .join("\n");
 
-customer_email: formData.email,
+      await emailjs.send(
+        "service_bxrt7vl",
+        "template_8eqr6gq",
+        {
+          customer_name:        formData.fullName,
+          customer_email:       formData.email,
+          customer_phone:       formData.phone,
+          customer_governorate: formData.governorate,
+          customer_address:     formData.address,
+          items_summary:        itemsSummary,
+          subtotal:             `${subtotal.toFixed(0)} EGP`,
+          shipping:             "50 EGP",
+          total:                `${total.toFixed(0)} EGP`,
+          confirm_link:         confirmLink,
+          cancel_link:          cancelLink,
+        },
+        "MPJAksf58hU6Lodho"
+      );
 
-customer_phone: formData.phone,
-
-customer_governorate: formData.governorate,
-
-customer_address: formData.address,
-
-items_summary: itemsSummary,
-
-subtotal: `${subtotal.toFixed(0)} EGP`,
-
-shipping: "50 EGP",
-
-total: `${total.toFixed(0)} EGP`,
-
-confirm_link: confirmLink,
-
-cancel_link: cancelLink
-
-},
-
-"MPJAksf58hU6Lodho"
-);
-
-    await emailjs.send(
-  "service_bxrt7vl",
-  "template_68aq71f",
-  {
-    customer_name: formData.fullName,
-
-    customer_email: formData.email,
-
-    customer_phone: formData.phone,
-
-    customer_governorate: formData.governorate,
-
-    customer_address: formData.address,
-
-    items_summary: itemsSummary,
-
-    subtotal: `${subtotal.toFixed(0)} EGP`,
-
-    shipping: "50 EGP",
-
-    total: `${total.toFixed(0)} EGP`,
-
-    confirm_link: confirmLink,
-    
-    cancel_link: cancelLink,
-  },
-
-  "MPJAksf58hU6Lodho"
-);
+      await emailjs.send(
+        "service_bxrt7vl",
+        "template_68aq71f",
+        {
+          customer_name:        formData.fullName,
+          customer_email:       formData.email,
+          customer_phone:       formData.phone,
+          customer_governorate: formData.governorate,
+          customer_address:     formData.address,
+          items_summary:        itemsSummary,
+          subtotal:             `${subtotal.toFixed(0)} EGP`,
+          shipping:             "50 EGP",
+          total:                `${total.toFixed(0)} EGP`,
+          confirm_link:         confirmLink,
+          cancel_link:          cancelLink,
+        },
+        "MPJAksf58hU6Lodho"
+      );
 
       /* ================= DONE ================= */
 
@@ -444,7 +355,6 @@ cancel_link: cancelLink
 
   /* ================= TOTALS ================= */
 
-  // كل قطعة quantity: 1 بعد الـ expand، فالسعر بسيط
   const subtotal = cartItems.reduce((sum, item) => sum + item.price, 0);
   const shipping = 50;
   const total = subtotal + shipping;
@@ -499,74 +409,70 @@ cancel_link: cancelLink
           <div className="checkout_layout">
 
             {/* PRODUCT OPTIONS */}
-              <div className="checkout_section">
-                <div className="options_header">
-                  <h2>{t.productOptions}</h2>
-                  <button
-                    className="size_guide_btn"
-                    onClick={() => setShowSizeModal(true)}
-                    title={t.tapToView}
-                  >
-                    <span>📏</span>
-                    {t.sizeGuide}
-                  </button>
-                </div>
+            <div className="checkout_section">
+              <div className="options_header">
+                <h2>{t.productOptions}</h2>
+                <button
+                  className="size_guide_btn"
+                  onClick={() => setShowSizeModal(true)}
+                  title={t.tapToView}
+                >
+                  <span>📏</span>
+                  {t.sizeGuide}
+                </button>
+              </div>
 
-                {/* PRODUCTS — كل قطعة منفصلة */}
-                {cartItems.map((item, index) => {
-                  const colors  = availableColors[item.id] ?? [];
-                  const options = itemOptions[item.uniqueKey];
+              {cartItems.map((item, index) => {
+                const options = itemOptions[item.uniqueKey];
 
-                  const sameProductCount = cartItems.filter(
-                    (c) => c.id === item.id
-                  ).length;
-                  const pieceIndex =
-                    cartItems
-                      .filter((c) => c.id === item.id)
-                      .findIndex((c) => c.uniqueKey === item.uniqueKey) + 1;
+                const sameProductCount = cartItems.filter(
+                  (c) => c.id === item.id
+                ).length;
+                const pieceIndex =
+                  cartItems
+                    .filter((c) => c.id === item.id)
+                    .findIndex((c) => c.uniqueKey === item.uniqueKey) + 1;
 
-                  const pieceLabel =
-                    sameProductCount > 1
-                      ? isArabic
-                        ? `${item.title} — قطعة ${pieceIndex}`
-                        : `${item.title} — ${t.piece} ${pieceIndex}`
-                      : item.title;
+                const pieceLabel =
+                  sameProductCount > 1
+                    ? isArabic
+                      ? `${item.title} — قطعة ${pieceIndex}`
+                      : `${item.title} — ${t.piece} ${pieceIndex}`
+                    : item.title;
 
-                  return (
-                    <div key={item.uniqueKey} className="product_options">
-                      <div className="product_header">
-                        <img src={item.image} alt={item.title} />
-                        <div>
-                          <h3>{pieceLabel}</h3>
-                          <p>{item.price.toFixed(0)} EGP</p>
-                        </div>
-                      </div>
-
-                      {/* SIZE */}
-                      <div className="co_field">
-                        <label>{t.size}</label>
-                        <div className="co_size_grid">
-                          {SIZES.map((sz) => (
-                            <button
-                              key={sz.value}
-                              type="button"
-                              className={`co_size_btn ${options?.size === sz.value ? "co_size_active" : ""}`}
-                              onClick={() => setSize(item.uniqueKey, sz.value)}
-                            >
-                              {sz.label}
-                            </button>
-                          ))}
-                        </div>
+                return (
+                  <div key={item.uniqueKey} className="product_options">
+                    <div className="product_header">
+                      <img src={item.image} alt={item.title} />
+                      <div>
+                        <h3>{pieceLabel}</h3>
+                        <p>{item.price.toFixed(0)} EGP</p>
                       </div>
                     </div>
-                  );
-                })}
-              </div>
+
+                    {/* SIZE */}
+                    <div className="co_field">
+                      <label>{t.size}</label>
+                      <div className="co_size_grid">
+                        {SIZES.map((sz) => (
+                          <button
+                            key={sz.value}
+                            type="button"
+                            className={`co_size_btn ${options?.size === sz.value ? "co_size_active" : ""}`}
+                            onClick={() => setSize(item.uniqueKey, sz.value)}
+                          >
+                            {sz.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
 
             {/* LEFT */}
             <div className="checkout_form">
-
-              {/* CUSTOMER */}
               <div className="checkout_section">
                 <h2>{t.customerInfo}</h2>
 
@@ -616,15 +522,13 @@ cancel_link: cancelLink
                   onChange={handleInput}
                 />
               </div>
-
-              
             </div>
 
             {/* RIGHT — SUMMARY */}
             <div className="summary_card">
               <h2>{t.orderSummary}</h2>
 
-              {cartItems.map((item, index) => {
+              {cartItems.map((item) => {
                 const sameProductCount = cartItems.filter(
                   (c) => c.id === item.id
                 ).length;
@@ -665,13 +569,14 @@ cancel_link: cancelLink
             </div>
 
             {/* BUTTON */}
-              <button
-                className="confirm_btn"
-                onClick={handleSubmit}
-                disabled={submitting}
-              >
-                {submitting ? t.processing : t.confirmOrder}
-              </button>
+            <button
+              className="confirm_btn"
+              onClick={handleSubmit}
+              disabled={submitting}
+            >
+              {submitting ? t.processing : t.confirmOrder}
+            </button>
+
           </div>
         )}
       </div>

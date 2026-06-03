@@ -272,7 +272,7 @@ function HeroSection({ isArabic, onShopNow, onLearnMore }: {
     <section className="hero_section">
       <div className="hero_content">
         <div className="hero_badge">
-          {isArabic ? "ملابس رياضية احترافية" : "PREMIUM COMPRESSION WEAR"}
+          {isArabic ? "ملابس رياضيه ممتازه" : "PREMIUM COMPRESSION WEAR"}
         </div>
         <img src="./images/StrikeWhiteLogo.png" alt="STRIKE." className="strike_hero_logo_img" onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.nextElementSibling?.classList.remove('hidden'); }} />
         <h1 className="Strike_Logo_for_hero_section hidden">
@@ -300,7 +300,7 @@ function HeroSection({ isArabic, onShopNow, onLearnMore }: {
 
 function FeatureSection({ isArabic }: { isArabic: boolean }) {
   const features = isArabic ? [
-    { icon: "bolt", title: "أداء أقصى", description: "خامة ضاغطة مصممة لدعم العضلات أثناء الحركات المتفجرة." },
+    { icon: "bolt", title: "افضل اداء", description: "خامة مميزه مصممة لدعم العضلات أثناء الحركات المتفجرة." },
     { icon: "air", title: "راحة فائقة", description: "تقنية متطورة لامتصاص العرق تبقيك منتعشاً وجافاً." },
     { icon: "verified", title: "جودة عالية", description: "خامات مختبرة من قبل رياضيين محترفين تدوم طويلاً." },
   ] : [
