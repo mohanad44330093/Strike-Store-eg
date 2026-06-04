@@ -77,6 +77,7 @@ const getFinalPrice = (product: Product) => {
 
 function ProductImageSlider({ images, title }: { images: string[]; title: string }) {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);  // ← جديد
   const validImages = images.filter(Boolean);
 
   if (validImages.length === 0) {
@@ -91,36 +92,222 @@ function ProductImageSlider({ images, title }: { images: string[]; title: string
     setCurrentIndex((index + validImages.length) % validImages.length);
 
   return (
-    <div className="product_image_wrapper">
-      {validImages.map((url, i) => (
-        <img
-          key={i}
-          src={url}
-          alt={`${title} - ${i + 1}`}
-          className={`product_image ${i === currentIndex ? "slide_active" : ""}`}
+    <>
+      <div className="product_image_wrapper">
+        {validImages.map((url, i) => (
+          <img
+            key={i}
+            src={url}
+            alt={`${title} - ${i + 1}`}
+            className={`product_image ${i === currentIndex ? "slide_active" : ""}`}
+            onClick={() => setLightboxOpen(true)}   // ← جديد
+            style={{ cursor: "zoom-in" }}           // ← جديد
+          />
+        ))}
+        {validImages.length > 1 && (
+          <>
+            <button
+              className="slide_arrow slide_arrow_left"
+              onClick={(e) => { e.stopPropagation(); goTo(currentIndex - 1); }}
+            >‹</button>
+            <button
+              className="slide_arrow slide_arrow_right"
+              onClick={(e) => { e.stopPropagation(); goTo(currentIndex + 1); }}
+            >›</button>
+            <div className="slide_dots">
+              {validImages.map((_, i) => (
+                <button
+                  key={i}
+                  className={`slide_dot ${i === currentIndex ? "slide_dot_active" : ""}`}
+                  onClick={(e) => { e.stopPropagation(); goTo(i); }}
+                />
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* Lightbox */}  {/* ← جديد */}
+      {lightboxOpen && (
+        <ImageLightbox
+          images={validImages}
+          initialIndex={currentIndex}
+          title={title}
+          onClose={() => setLightboxOpen(false)}
         />
-      ))}
-      {validImages.length > 1 && (
-        <>
-          <button
-            className="slide_arrow slide_arrow_left"
-            onClick={(e) => { e.stopPropagation(); goTo(currentIndex - 1); }}
-          >‹</button>
-          <button
-            className="slide_arrow slide_arrow_right"
-            onClick={(e) => { e.stopPropagation(); goTo(currentIndex + 1); }}
-          >›</button>
-          <div className="slide_dots">
-            {validImages.map((_, i) => (
+      )}
+    </>
+  );
+}
+
+/* ================= IMAGE LIGHTBOX ================= */
+
+function ImageLightbox({
+  images, initialIndex, title, onClose,
+}: {
+  images: string[]; initialIndex: number; title: string; onClose: () => void;
+}) {
+  const [currentIndex, setCurrentIndex] = useState(initialIndex);
+  const [scale, setScale] = useState(1);
+  const [dragging, setDragging] = useState(false);
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const [startDrag, setStartDrag] = useState({ x: 0, y: 0 });
+  const [startOffset, setStartOffset] = useState({ x: 0, y: 0 });
+  const validImages = images.filter(Boolean);
+
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+      if (e.key === "ArrowRight") goTo(currentIndex + 1);
+      if (e.key === "ArrowLeft") goTo(currentIndex - 1);
+      if (e.key === "+" || e.key === "=") zoomIn();
+      if (e.key === "-") zoomOut();
+    };
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
+  }, [currentIndex, scale]);
+
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = ""; };
+  }, []);
+
+  const goTo = (index: number) => {
+    setCurrentIndex((index + validImages.length) % validImages.length);
+    setScale(1);
+    setOffset({ x: 0, y: 0 });
+  };
+
+  const zoomIn = () => setScale((s) => Math.min(s + 0.5, 4));
+  const zoomOut = () => {
+    setScale((s) => {
+      const next = Math.max(s - 0.5, 1);
+      if (next === 1) setOffset({ x: 0, y: 0 });
+      return next;
+    });
+  };
+  const resetZoom = () => { setScale(1); setOffset({ x: 0, y: 0 }); };
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (scale <= 1) return;
+    setDragging(true);
+    setStartDrag({ x: e.clientX, y: e.clientY });
+    setStartOffset({ ...offset });
+  };
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!dragging) return;
+    setOffset({
+      x: startOffset.x + (e.clientX - startDrag.x),
+      y: startOffset.y + (e.clientY - startDrag.y),
+    });
+  };
+  const handleMouseUp = () => setDragging(false);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (scale <= 1) return;
+    const t = e.touches[0];
+    setDragging(true);
+    setStartDrag({ x: t.clientX, y: t.clientY });
+    setStartOffset({ ...offset });
+  };
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!dragging) return;
+    const t = e.touches[0];
+    setOffset({
+      x: startOffset.x + (t.clientX - startDrag.x),
+      y: startOffset.y + (t.clientY - startDrag.y),
+    });
+  };
+
+  const handleWheel = (e: React.WheelEvent) => {
+    e.preventDefault();
+    if (e.deltaY < 0) zoomIn();
+    else zoomOut();
+  };
+
+  return (
+    <div className="lightbox_overlay" onClick={onClose}>
+      <div className="lightbox_container" onClick={(e) => e.stopPropagation()}>
+
+        {/* Top Bar */}
+        <div className="lightbox_topbar">
+          <span className="lightbox_title">{title}</span>
+          <div className="lightbox_controls">
+            <button className="lb_btn" onClick={zoomOut} disabled={scale <= 1} title="Zoom Out">
+              <span className="material-symbols-outlined">zoom_out</span>
+            </button>
+            <span className="lb_zoom_label">{Math.round(scale * 100)}%</span>
+            <button className="lb_btn" onClick={zoomIn} disabled={scale >= 4} title="Zoom In">
+              <span className="material-symbols-outlined">zoom_in</span>
+            </button>
+            <button className="lb_btn" onClick={resetZoom} title="Reset">
+              <span className="material-symbols-outlined">zoom_out_map</span>
+            </button>
+            <button className="lb_btn lb_close_btn" onClick={onClose} title="Close">
+              <span className="material-symbols-outlined">close</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Image Area */}
+        <div
+          className={`lightbox_image_area ${scale > 1 ? "grab_cursor" : ""} ${dragging ? "grabbing_cursor" : ""}`}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseUp}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={() => setDragging(false)}
+          onWheel={handleWheel}
+        >
+          <img
+            src={validImages[currentIndex]}
+            alt={`${title} - ${currentIndex + 1}`}
+            className="lightbox_img"
+            draggable={false}
+            style={{
+              transform: `scale(${scale}) translate(${offset.x / scale}px, ${offset.y / scale}px)`,
+              transition: dragging ? "none" : "transform 0.2s ease",
+              cursor: scale > 1 ? (dragging ? "grabbing" : "grab") : "default",
+            }}
+          />
+        </div>
+
+        {/* Navigation Arrows */}
+        {validImages.length > 1 && (
+          <>
+            <button
+              className="lb_arrow lb_arrow_left"
+              onClick={() => goTo(currentIndex - 1)}
+            >‹</button>
+            <button
+              className="lb_arrow lb_arrow_right"
+              onClick={() => goTo(currentIndex + 1)}
+            >›</button>
+          </>
+        )}
+
+        {/* Thumbnails */}
+        {validImages.length > 1 && (
+          <div className="lightbox_thumbnails">
+            {validImages.map((url, i) => (
               <button
                 key={i}
-                className={`slide_dot ${i === currentIndex ? "slide_dot_active" : ""}`}
-                onClick={(e) => { e.stopPropagation(); goTo(i); }}
-              />
+                className={`lb_thumb ${i === currentIndex ? "lb_thumb_active" : ""}`}
+                onClick={() => goTo(i)}
+              >
+                <img src={url} alt={`${title} - ${i + 1}`} />
+              </button>
             ))}
           </div>
-        </>
-      )}
+        )}
+
+        {/* Counter */}
+        <div className="lightbox_counter">
+          {currentIndex + 1} / {validImages.length}
+        </div>
+      </div>
     </div>
   );
 }
@@ -703,6 +890,8 @@ export default function MainPageEN() {
     </section>
   );
 
+  
+
   // Prevent rendering until hydrated (fixes redirect layout issue)
   if (!isHydrated) {
     return (
@@ -807,4 +996,4 @@ export default function MainPageEN() {
       </footer>
     </>
   );
-} 
+}  
