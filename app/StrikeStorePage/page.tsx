@@ -54,7 +54,6 @@ interface Product {
   description: string;
   discount?: number;
   images?: string[];
-  stockState?: boolean;
 }
 
 interface CartProduct {
@@ -401,13 +400,10 @@ function SearchBarWithSuggestions({
                   </div>
                 </div>
                 <button
-                  className={`suggestion_add_btn ${product.stockState === false ? "out_of_stock_btn" : ""}`}
-                  disabled={product.stockState === false}
-                  onClick={() => { if(product.stockState !== false){ onAddToCart(product); setQueryVal(""); setFocused(false); } }}
+                  className="suggestion_add_btn"
+                  onClick={() => { onAddToCart(product); setQueryVal(""); setFocused(false); }}
                 >
-                  <span className="material-symbols-outlined">
-                    {product.stockState === false ? "block" : "shopping_bag"}
-                  </span>
+                  <span className="material-symbols-outlined">shopping_bag</span>
                 </button>
               </div>
             ))
@@ -730,7 +726,6 @@ export default function MainPageEN() {
               description: data.description || "",
               discount: data.discount || 0,
               images: Array.isArray(data.images) ? data.images : [],
-              stockState: data.stockState !== false,
             });
           });
           setAllProducts(allProds);
@@ -883,17 +878,10 @@ export default function MainPageEN() {
                     <span className="product_price">{product.price} EGP</span>
                   )}
                 </div>
-                {product.stockState === false ? (
-                <button className="add_to_cart_btn out_of_stock_main_btn" disabled>
-                  <span className="material-symbols-outlined">block</span>
-                  {isArabic ? "نفدت الكمية" : "Out Of Stock"}
-                </button>
-                ) : (
                 <button className="add_to_cart_btn" onClick={() => addToCart(product)}>
                   <span className="material-symbols-outlined">shopping_bag</span>
                   {isArabic ? "أضف للسلة" : "Add To Cart"}
                 </button>
-                )}
               </div>
             </div>
           ))}

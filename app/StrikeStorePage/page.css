@@ -1824,17 +1824,3 @@ body.no_scroll {
 /* ============================================== | */
 /* =======This code was written by Mohannad Ahmed | */
 /* ============================================== | */
-
-/* Out of stock */
-.out_of_stock_main_btn,
-.out_of_stock_btn{
-  background:#555 !important;
-  color:#ddd !important;
-  cursor:not-allowed !important;
-  opacity:.75;
-}
-.out_of_stock_main_btn:hover,
-.out_of_stock_btn:hover{
-  transform:none !important;
-  box-shadow:none !important;
-}

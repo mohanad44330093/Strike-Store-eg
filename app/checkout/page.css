@@ -341,6 +341,19 @@
   box-shadow: 0 0 0 1px #fff;
 }
 
+.co_size_btn.co_size_disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  text-decoration: line-through;
+  background: rgba(255,80,80,0.06);
+  border-color: rgba(255,80,80,0.2);
+  color: #ff5050;
+}
+.co_size_btn.co_size_disabled:hover {
+  background: rgba(255,80,80,0.06);
+  border-color: rgba(255,80,80,0.2);
+}
+
 /* ================= COLOR BUTTONS ================= */
 
 .co_color_grid {

@@ -9,6 +9,8 @@ import {
   collection,
   addDoc,
   serverTimestamp,
+  doc,
+  getDoc,
 } from "firebase/firestore";
 import emailjs from "@emailjs/browser";
 
@@ -38,6 +40,7 @@ interface CartItem {
   image: string;
   price: number;
   quantity: number;
+  sizes?: Record<string, boolean>;
 }
 
 interface ExpandedCartItem extends CartItem {
@@ -145,6 +148,11 @@ export default function CheckoutPage() {
     Record<string, { size: string }>
   >({});
 
+  // sizes per product id: { [productId]: { S: true, M: false, ... } }
+  const [productSizes, setProductSizes] = useState<
+    Record<string, Record<string, boolean>>
+  >({});
+
   const [formData, setFormData] = useState({
     fullName: "",
     phone: "",
@@ -166,30 +174,49 @@ export default function CheckoutPage() {
   /* ================= LOAD ================= */
 
   useEffect(() => {
-    const savedLang = localStorage.getItem("UserLanguage");
-    setLanguage(savedLang === "Arabic" ? "ar" : "en");
+    const init = async () => {
+      const savedLang = localStorage.getItem("UserLanguage");
+      setLanguage(savedLang === "Arabic" ? "ar" : "en");
 
-    const savedCart = localStorage.getItem("strike_cart");
-    if (savedCart) {
-      const parsed: CartItem[] = JSON.parse(savedCart);
+      const savedCart = localStorage.getItem("strike_cart");
+      if (savedCart) {
+        const parsed: CartItem[] = JSON.parse(savedCart);
 
-      const expanded: ExpandedCartItem[] = [];
-      parsed.forEach((item) => {
-        for (let i = 0; i < item.quantity; i++) {
-          expanded.push({ ...item, quantity: 1, uniqueKey: `${item.id}_${i}` });
-        }
-      });
+        const expanded: ExpandedCartItem[] = [];
+        parsed.forEach((item) => {
+          for (let i = 0; i < item.quantity; i++) {
+            expanded.push({ ...item, quantity: 1, uniqueKey: `${item.id}_${i}` });
+          }
+        });
 
-      setCartItems(expanded);
+        setCartItems(expanded);
 
-      const initOptions: Record<string, { size: string }> = {};
-      expanded.forEach((item) => {
-        initOptions[item.uniqueKey] = { size: "" };
-      });
-      setItemOptions(initOptions);
-    }
+        const initOptions: Record<string, { size: string }> = {};
+        expanded.forEach((item) => {
+          initOptions[item.uniqueKey] = { size: "" };
+        });
+        setItemOptions(initOptions);
 
-    setLoading(false);
+        // Fetch sizes for each unique product
+        const uniqueIds = [...new Set(parsed.map((i: CartItem) => i.id))];
+        const sizesMap: Record<string, Record<string, boolean>> = {};
+        await Promise.all(
+          uniqueIds.map(async (pid: string) => {
+            try {
+              const snap = await getDoc(doc(db, "products", pid));
+              if (snap.exists()) {
+                sizesMap[pid] = (snap.data().sizes as Record<string, boolean>) || {};
+              }
+            } catch {}
+          })
+        );
+        setProductSizes(sizesMap);
+      }
+
+      setLoading(false);
+    };
+
+    init();
   }, []);
 
   /* ================= HANDLERS ================= */
@@ -454,16 +481,23 @@ export default function CheckoutPage() {
                     <div className="co_field">
                       <label>{t.size}</label>
                       <div className="co_size_grid">
-                        {SIZES.map((sz) => (
-                          <button
-                            key={sz.value}
-                            type="button"
-                            className={`co_size_btn ${options?.size === sz.value ? "co_size_active" : ""}`}
-                            onClick={() => setSize(item.uniqueKey, sz.value)}
-                          >
-                            {sz.label}
-                          </button>
-                        ))}
+                        {SIZES.map((sz) => {
+                          const sizesForProduct = productSizes[item.id] ?? {};
+                          // If sizes object is empty (old product), all are enabled
+                          const hasAnyConfig = Object.keys(sizesForProduct).length > 0;
+                          const isAvailable = !hasAnyConfig || sizesForProduct[sz.value] === true;
+                          return (
+                            <button
+                              key={sz.value}
+                              type="button"
+                              disabled={!isAvailable}
+                              className={`co_size_btn ${options?.size === sz.value ? "co_size_active" : ""} ${!isAvailable ? "co_size_disabled" : ""}`}
+                              onClick={() => isAvailable && setSize(item.uniqueKey, sz.value)}
+                            >
+                              {sz.label}
+                            </button>
+                          );
+                        })}
                       </div>
                     </div>
                   </div>
