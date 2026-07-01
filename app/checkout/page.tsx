@@ -106,8 +106,6 @@ const translations = {
     size: "Size",
     productOptions: "Product Options",
     toastMessage: "Order placed successfully. Please Confirm Your Order On Your Email Before 15 Minutes",
-    sizeGuide: "Size Guide",
-    tapToView: "Tap to view size details",
     piece: "Piece",
   },
   ar: {
@@ -126,8 +124,6 @@ const translations = {
     size: "المقاس",
     productOptions: "خيارات المنتجات",
     toastMessage: "تم ارسال الطلب بنجاح، يرجي تأكيد الطلب عن طريق البريد الإلكتروني الخاص بك خلال 15 دقيقة",
-    sizeGuide: "دليل المقاسات",
-    tapToView: "اضغط لعرض تفاصيل المقاسات",
     piece: "قطعة",
   },
 };
@@ -142,7 +138,6 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [toastVisible, setToastVisible] = useState(false);
-  const [showSizeModal, setShowSizeModal] = useState(false);
 
   const [itemOptions, setItemOptions] = useState<
     Record<string, { size: string }>
@@ -397,35 +392,6 @@ export default function CheckoutPage() {
           {t.toastMessage}
         </div>
 
-        {/* SIZE GUIDE MODAL */}
-        {showSizeModal && (
-          <div className="size_modal_overlay" onClick={() => setShowSizeModal(false)}>
-            <div className="size_modal_content" onClick={(e) => e.stopPropagation()}>
-              <button
-                className="size_modal_close"
-                onClick={() => setShowSizeModal(false)}
-              >
-                ✕
-              </button>
-              <div className="size_modal_legend">
-                <h3>{t.sizeGuide}</h3>
-                <div className="size_legend_grid">
-                  {SIZES.map((size) => (
-                    <div key={size.value} className="size_legend_item">
-                      <div className="size_legend_label">{size.label}</div>
-                      <div className="size_legend_specs">
-                        <span>⚖️ {size.weight}</span>
-                        <span>L📏 {size.height}</span>
-                        <span>W↔️ {size.width}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
         <header className="checkout_header">
           <h1>{t.pageTitle}</h1>
         </header>
@@ -439,14 +405,6 @@ export default function CheckoutPage() {
             <div className="checkout_section">
               <div className="options_header">
                 <h2>{t.productOptions}</h2>
-                <button
-                  className="size_guide_btn"
-                  onClick={() => setShowSizeModal(true)}
-                  title={t.tapToView}
-                >
-                  <span>📏</span>
-                  {t.sizeGuide}
-                </button>
               </div>
 
               {cartItems.map((item, index) => {
